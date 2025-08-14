@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Monitoring Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .temperature-display {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #0d6efd;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .source-indicator {
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+        
+        .source-local {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 2px solid #badbcc;
+        }
+        
+        .source-cloud {
+            background-color: #fff3cd;
+            color: #664d03;
+            border: 2px solid #ffecb5;
+        }
+        
+        .source-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .status-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+        }
+        
+        .timestamp {
+            font-size: 1rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .refresh-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .network-status {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            z-index: 10;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .error-alert {
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .success-alert {
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Header Card -->
+                <div class="card status-card mb-4">
+                    <div class="card-header text-center">
+                        <h1 class="mb-0">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Temperature Monitoring Dashboard
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Real-time temperature data from local sensor or cloud</p>
+                    </div>
+                </div>
+
+                <!-- Temperature Display Card -->
+                <div class="card status-card mb-4 position-relative">
+                    <div class="card-body text-center py-5">
+                        <div class="refresh-indicator">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            <span id="last-refresh">--</span>
+                        </div>
+                        
+                        <div class="loading-overlay" id="loading-overlay">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary mb-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div>Fetching temperature data...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <i class="fas fa-thermometer-half text-primary pulse" style="font-size: 3rem;"></i>
+                        </div>
+                        
+                        <div class="temperature-display mb-3" id="temperature-display">
+                            --°C
+                        </div>
+                        
+                        <div class="timestamp mb-3" id="timestamp">
+                            No data available
+                        </div>
+                        
+                        <div class="source-indicator" id="source-indicator">
+                            <i class="fas fa-question-circle me-2"></i>
+                            Unknown Source
+                        </div>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Data source: <span id="data-source-text">Checking...</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Status Card -->
+                <div class="card status-card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-network-wired me-2"></i>
+                            Network Status
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="network-status mb-2">
+                                    <i class="fas fa-home me-2"></i>
+                                    <strong>Local IP:</strong> <span id="local-ip">--</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="network-status mb-2">
+                                    <i class="fas fa-server me-2"></i>
+                                    <strong>Sensor IP:</strong> <span id="sensor-ip">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="network-status mb-2">
+                            <i class="fas fa-wifi me-2"></i>
+                            <strong>Network Status:</strong> <span id="network-status">--</span>
+                        </div>
+                        
+                        <div class="network-status">
+                            <i class="fas fa-key me-2"></i>
+                            <strong>User ID:</strong> <span id="user-id">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Control Panel Card -->
+                <div class="card status-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-cogs me-2"></i>
+                            Dashboard Controls
+                        </h5>
+                        
+                        <div class="row justify-content-center">
+                            <div class="col-md-4">
+                                <button class="btn btn-primary btn-lg w-100" onclick="refreshData()">
+                                    <i class="fas fa-sync-alt me-2"></i>
+                                    Refresh Now
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-secondary btn-lg w-100" onclick="toggleAutoRefresh()">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <span id="auto-refresh-text">Auto: ON</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Auto-refresh every 10 seconds
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="alert alert-danger error-alert" id="error-alert" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="error-text"></span>
+                </div>
+                
+                <div class="alert alert-success success-alert" id="success-alert" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="success-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let autoRefreshInterval;
+        let autoRefreshEnabled = true;
+        let lastRefreshTime = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStatus();
+            refreshData();
+            startAutoRefresh();
+        });
+
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                document.getElementById('local-ip').textContent = data.local_ip || '--';
+                document.getElementById('sensor-ip').textContent = data.sensor_ip || '--';
+                document.getElementById('user-id').textContent = data.user_id || '--';
+                
+                const networkStatus = document.getElementById('network-status');
+                if (data.same_network) {
+                    networkStatus.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i>Same Network';
+                } else {
+                    networkStatus.innerHTML = '<i class="fas fa-times-circle text-warning me-1"></i>Different Network';
+                }
+                
+            } catch (error) {
+                console.error('Error loading system status:', error);
+            }
+        }
+
+        async function refreshData() {
+            showLoading(true);
+            updateLastRefresh();
+            
+            try {
+                const response = await fetch('/fetch');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateDisplay(data);
+                    showSuccess(`Data refreshed from ${data.source} source`);
+                    hideError();
+                } else {
+                    showError(`Failed to fetch data: ${data.error}`);
+                    updateDisplay({
+                        temperature: null,
+                        timestamp: null,
+                        source: 'error',
+                        sensor_name: 'Error'
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError('Network error while fetching data');
+                updateDisplay({
+                    temperature: null,
+                    timestamp: null,
+                    source: 'error',
+                    sensor_name: 'Network Error'
+                });
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function updateDisplay(data) {
+            const tempDisplay = document.getElementById('temperature-display');
+            const timestamp = document.getElementById('timestamp');
+            const sourceIndicator = document.getElementById('source-indicator');
+            const dataSourceText = document.getElementById('data-source-text');
+            
+            // Update temperature
+            if (data.temperature !== null) {
+                tempDisplay.textContent = `${data.temperature}°C`;
+            } else {
+                tempDisplay.textContent = '--°C';
+            }
+
+            // Update timestamp
+            if (data.timestamp) {
+                if (data.formatted_timestamp) {
+                    timestamp.textContent = `Last updated: ${data.formatted_timestamp}`;
+                } else {
+                    timestamp.textContent = `Last updated: ${data.timestamp}`;
+                }
+            } else {
+                timestamp.textContent = 'No data available';
+            }
+
+            // Update source indicator
+            const sourceIndicatorElement = document.getElementById('source-indicator');
+            sourceIndicatorElement.className = 'source-indicator';
+            
+            if (data.source === 'local') {
+                sourceIndicatorElement.classList.add('source-local');
+                sourceIndicatorElement.innerHTML = '<i class="fas fa-home me-2"></i>Local Sensor';
+                dataSourceText.textContent = 'Local Raspberry Pi Sensor';
+            } else if (data.source === 'cloud') {
+                sourceIndicatorElement.classList.add('source-cloud');
+                sourceIndicatorElement.innerHTML = '<i class="fas fa-cloud me-2"></i>Cloud (ThingSpeak)';
+                dataSourceText.textContent = 'ThingSpeak Cloud Service';
+            } else {
+                sourceIndicatorElement.classList.add('source-error');
+                sourceIndicatorElement.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error';
+                dataSourceText.textContent = 'Error - No data available';
+            }
+        }
+
+        function updateLastRefresh() {
+            const now = new Date();
+            lastRefreshTime = now;
+            document.getElementById('last-refresh').textContent = now.toLocaleTimeString();
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshEnabled) {
+                autoRefreshInterval = setInterval(refreshData, 10000); // 10 seconds
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            
+            if (autoRefreshEnabled) {
+                startAutoRefresh();
+                document.getElementById('auto-refresh-text').textContent = 'Auto: ON';
+                showSuccess('Auto-refresh enabled');
+            } else {
+                stopAutoRefresh();
+                document.getElementById('auto-refresh-text').textContent = 'Auto: OFF';
+                showSuccess('Auto-refresh disabled');
+            }
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-alert');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // Hide success alert if showing
+            document.getElementById('success-alert').style.display = 'none';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-alert');
+            const successText = document.getElementById('success-text');
+            successText.textContent = message;
+            successDiv.style.display = 'block';
+            
+            // Hide error alert if showing
+            document.getElementById('error-alert').style.display = 'none';
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function hideError() {
+            document.getElementById('error-alert').style.display = 'none';
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

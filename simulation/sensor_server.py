@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+"""
+Raspberry Pi Temperature Sensor Simulation Server
+Part A: Flask application that simulates temperature sensor readings
+and provides both local and cloud data transfer capabilities.
+"""
+
+import os
+import time
+import json
+import random
+import threading
+import requests
+from datetime import datetime
+from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configuration - Load from environment variables
+THINGSPEAK_API_KEY = os.getenv("THINGSPEAK_WRITE_API_KEY", "YOUR_THINGSPEAK_WRITE_API_KEY")
+THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "YOUR_CHANNEL_ID")
+USER_ID = os.getenv("USER_ID", "RASPBERRY_PI_SENSOR_2024")
+SENSOR_NAME = os.getenv("SENSOR_NAME", "Raspberry Pi Temperature Sensor")
+TEMP_MIN = float(os.getenv("TEMP_MIN", "20.0"))
+TEMP_MAX = float(os.getenv("TEMP_MAX", "40.0"))
+UPDATE_INTERVAL = int(os.getenv("UPDATE_INTERVAL", "15"))
+SIMULATION_PORT = int(os.getenv("SIMULATION_PORT", "5000"))
+
+# Flask app initialization
+app = Flask(__name__)
+CORS(app)  # Enable CORS for local network access
+
+# Global variables for sensor state and data
+sensor_active = False
+latest_temperature = None
+latest_timestamp = None
+sensor_thread = None
+stop_thread = False
+
+def generate_temperature():
+    """Generate a realistic temperature reading with some variation."""
+    # Add some realistic variation (small changes from previous reading)
+    if latest_temperature is None:
+        base_temp = random.uniform(TEMP_MIN, TEMP_MAX)
+    else:
+        # Small variation from previous reading (±2°C)
+        variation = random.uniform(-2.0, 2.0)
+        base_temp = latest_temperature + variation
+        # Keep within bounds
+        base_temp = max(TEMP_MIN, min(TEMP_MAX, base_temp))
+    
+    # Add some decimal precision for realism
+    return round(base_temp, 1)
+
+def send_to_thingspeak(temperature):
+    """Send temperature data to ThingSpeak cloud service."""
+    try:
+        url = f"https://api.thingspeak.com/update"
+        data = {
+            'api_key': THINGSPEAK_API_KEY,
+            'field1': temperature,
+            'field2': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        response = requests.post(url, data=data, timeout=10)
+        
+        if response.status_code == 200:
+            print(f"✓ Temperature {temperature}°C sent to ThingSpeak successfully")
+            return True
+        else:
+            print(f"✗ Failed to send to ThingSpeak. Status: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"✗ Error sending to ThingSpeak: {str(e)}")
+        return False
+
+def sensor_simulation_loop():
+    """Background thread for continuous temperature simulation and cloud updates."""
+    global latest_temperature, latest_timestamp, stop_thread
+    
+    print("🌡️  Temperature sensor simulation started")
+    
+    while not stop_thread:
+        if sensor_active:
+            # Generate new temperature reading
+            temp = generate_temperature()
+            latest_temperature = temp
+            latest_timestamp = datetime.now()
+            
+            print(f"📊 New reading: {temp}°C at {latest_timestamp.strftime('%H:%M:%S')}")
+            
+            # Send to ThingSpeak cloud
+            if send_to_thingspeak(temp):
+                print("☁️  Data sent to cloud successfully")
+            else:
+                print("⚠️  Cloud upload failed, will retry next cycle")
+            
+            # Wait for next update cycle
+            time.sleep(UPDATE_INTERVAL)
+        else:
+            # Sensor is off, just wait
+            time.sleep(1)
+    
+    print("🛑 Temperature sensor simulation stopped")
+
+def start_sensor():
+    """Start the temperature sensor simulation."""
+    global sensor_active, sensor_thread, stop_thread
+    
+    if not sensor_active:
+        sensor_active = True
+        stop_thread = False
+        
+        if sensor_thread is None or not sensor_thread.is_alive():
+            sensor_thread = threading.Thread(target=sensor_simulation_loop, daemon=True)
+            sensor_thread.start()
+            print("🚀 Temperature sensor activated")
+        
+        return True
+    return False
+
+def stop_sensor():
+    """Stop the temperature sensor simulation."""
+    global sensor_active, stop_thread
+    
+    if sensor_active:
+        sensor_active = False
+        stop_thread = True
+        print("⏹️  Temperature sensor deactivated")
+        return True
+    return False
+
+# Flask Routes
+
+@app.route('/')
+def dashboard():
+    """Main dashboard page with temperature display and controls."""
+    return render_template('sensor_dashboard.html')
+
+@app.route('/api/status')
+def get_status():
+    """Get current sensor status and latest temperature."""
+    return jsonify({
+        'active': sensor_active,
+        'temperature': latest_temperature,
+        'timestamp': latest_timestamp.isoformat() if latest_timestamp else None,
+        'sensor_name': SENSOR_NAME,
+        'user_id': USER_ID
+    })
+
+@app.route('/api/start', methods=['POST'])
+def start_sensor_api():
+    """API endpoint to start the sensor."""
+    success = start_sensor()
+    return jsonify({'success': success, 'active': sensor_active})
+
+@app.route('/api/stop', methods=['POST'])
+def stop_sensor_api():
+    """API endpoint to stop the sensor."""
+    success = stop_sensor()
+    return jsonify({'success': success, 'active': sensor_active})
+
+@app.route('/data')
+def get_temperature_data():
+    """Local API endpoint for temperature data (used by local UI clients)."""
+    if latest_temperature is not None:
+        return jsonify({
+            'temperature': latest_temperature,
+            'timestamp': latest_timestamp.isoformat(),
+            'source': 'local',
+            'sensor_name': SENSOR_NAME,
+            'user_id': USER_ID
+        })
+    else:
+        return jsonify({'error': 'No temperature data available'}), 404
+
+@app.route('/api/verify', methods=['POST'])
+def verify_identity():
+    """Verify client identity for local access."""
+    data = request.get_json()
+    client_user_id = data.get('user_id') if data else None
+    
+    if client_user_id == USER_ID:
+        return jsonify({'verified': True, 'message': 'Identity verified'})
+    else:
+        return jsonify({'verified': False, 'message': 'Identity verification failed'}), 401
+
+if __name__ == '__main__':
+    print("🌡️  Raspberry Pi Temperature Sensor Server")
+    print("=" * 50)
+    print(f"📡 ThingSpeak Channel ID: {THINGSPEAK_CHANNEL_ID}")
+    print(f"🔑 User ID: {USER_ID}")
+    print(f"🌡️  Temperature Range: {TEMP_MIN}°C - {TEMP_MAX}°C")
+    print(f"⏱️  Cloud Update Interval: {UPDATE_INTERVAL} seconds")
+    print(f"🌐 Server Port: {SIMULATION_PORT}")
+    print("=" * 50)
+    
+    # Check if API key is still placeholder
+    if THINGSPEAK_API_KEY == "YOUR_THINGSPEAK_WRITE_API_KEY":
+        print("⚠️  WARNING: THINGSPEAK_WRITE_API_KEY not set in .env file!")
+        print("   Update the .env file with your actual ThingSpeak write API key")
+    else:
+        print("✅ ThingSpeak API key configured")
+    
+    if THINGSPEAK_CHANNEL_ID == "YOUR_CHANNEL_ID":
+        print("⚠️  WARNING: THINGSPEAK_CHANNEL_ID not set in .env file!")
+        print("   Update the .env file with your actual ThingSpeak channel ID")
+    else:
+        print("✅ ThingSpeak channel ID configured")
+    
+    print("=" * 50)
+    
+    # Start Flask app
+    app.run(host='0.0.0.0', port=SIMULATION_PORT, debug=False)
