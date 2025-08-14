@@ -15,6 +15,9 @@ from datetime import datetime
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+import sys
+sys.path.append('..')  # Add parent directory to path for event_logger import
+from event_logger import log_sensor_event, log_error_event, log_data_event
 
 # Load environment variables from .env file
 load_dotenv()
@@ -69,13 +72,19 @@ def send_to_thingspeak(temperature):
         
         if response.status_code == 200:
             print(f"✓ Temperature {temperature}°C sent to ThingSpeak successfully")
+            # Log successful cloud upload
+            log_data_event('sensor', 'cloud_upload', f'Temperature {temperature}°C sent to ThingSpeak')
             return True
         else:
             print(f"✗ Failed to send to ThingSpeak. Status: {response.status_code}")
+            # Log cloud upload failure
+            log_error_event('sensor', f'ThingSpeak upload failed with status {response.status_code}')
             return False
             
     except Exception as e:
         print(f"✗ Error sending to ThingSpeak: {str(e)}")
+        # Log cloud upload error
+        log_error_event('sensor', f'ThingSpeak upload error: {str(e)}')
         return False
 
 def sensor_simulation_loop():
@@ -92,6 +101,8 @@ def sensor_simulation_loop():
             latest_timestamp = datetime.now()
             
             print(f"📊 New reading: {temp}°C at {latest_timestamp.strftime('%H:%M:%S')}")
+            # Log temperature reading generation
+            log_data_event('sensor', 'reading_generated', f'New temperature reading: {temp}°C')
             
             # Send to ThingSpeak cloud
             if send_to_thingspeak(temp):
@@ -119,6 +130,8 @@ def start_sensor():
             sensor_thread = threading.Thread(target=sensor_simulation_loop, daemon=True)
             sensor_thread.start()
             print("🚀 Temperature sensor activated")
+            # Log sensor activation
+            log_sensor_event('sensor_on', 'Temperature sensor simulation started')
         
         return True
     return False
@@ -131,6 +144,8 @@ def stop_sensor():
         sensor_active = False
         stop_thread = True
         print("⏹️  Temperature sensor deactivated")
+        # Log sensor deactivation
+        log_sensor_event('sensor_off', 'Temperature sensor simulation stopped')
         return True
     return False
 
@@ -168,6 +183,8 @@ def stop_sensor_api():
 def get_temperature_data():
     """Local API endpoint for temperature data (used by local UI clients)."""
     if latest_temperature is not None:
+        # Log local data request
+        log_data_event('sensor', 'local_api_request', f'Temperature data requested by local UI: {latest_temperature}°C')
         return jsonify({
             'temperature': latest_temperature,
             'timestamp': latest_timestamp.isoformat(),
@@ -176,6 +193,8 @@ def get_temperature_data():
             'user_id': USER_ID
         })
     else:
+        # Log error when no data available
+        log_error_event('sensor', 'No temperature data available for local API request')
         return jsonify({'error': 'No temperature data available'}), 404
 
 @app.route('/api/verify', methods=['POST'])
@@ -185,8 +204,12 @@ def verify_identity():
     client_user_id = data.get('user_id') if data else None
     
     if client_user_id == USER_ID:
+        # Log successful identity verification
+        log_data_event('sensor', 'identity_verified', f'Client identity verified: {client_user_id}')
         return jsonify({'verified': True, 'message': 'Identity verified'})
     else:
+        # Log failed identity verification
+        log_error_event('sensor', f'Identity verification failed for client: {client_user_id}')
         return jsonify({'verified': False, 'message': 'Identity verification failed'}), 401
 
 if __name__ == '__main__':
