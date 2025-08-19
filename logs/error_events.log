@@ -1,0 +1,2 @@
+{"timestamp": "2025-08-18T11:53:26.832037", "type": "error", "component": "test", "error_message": "Simulated connection timeout"}
+{"timestamp": "2025-08-18T11:53:26.832895", "type": "error", "component": "test", "error_message": "API response delay detected"}

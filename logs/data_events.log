@@ -1,0 +1,88 @@
+{"timestamp": "2025-08-18T11:53:26.830325", "type": "data", "component": "test", "event_type": "data_generated", "description": "Test temperature data: 25.5\u00b0C"}
+{"timestamp": "2025-08-18T11:53:26.831272", "type": "data", "component": "test", "event_type": "api_request", "description": "Test API request processed"}
+{"timestamp": "2025-08-18T11:53:26.834537", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "Temperature reading: 26.2\u00b0C"}
+{"timestamp": "2025-08-19T10:09:14.713896", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:20.231284", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:24.909425", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:30.223030", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:34.906867", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:40.235948", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:42.300792", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 26.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:09:44.686043", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:50.011555", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:54.910395", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:09:59.276724", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 26.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:10:00.215150", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:04.910901", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:10.235223", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:14.913350", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:16.222075", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 24.3\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:10:20.218054", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:24.916594", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:30.234907", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:33.017617", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 25.1\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:10:34.925283", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:40.218581", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:44.924473", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:49.839910", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 25.5\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:10:50.217038", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:10:58.907525", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:06.617387", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 25.7\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:11:23.293427", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 26.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:11:34.301849", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:34.712680", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:40.182249", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:44.689536", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:49.620956", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:50.928212", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:11:56.235220", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:00.930281", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:06.210624", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:10.910158", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:16.223266", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:20.918200", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:26.219887", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:30.911172", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:36.228154", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:40.920206", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:46.218967", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:50.916281", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:12:56.215317", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:00.919161", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:06.234834", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:10.923625", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:16.238005", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:20.922377", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:26.236130", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:30.923020", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:36.238382", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:40.906333", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:46.222050", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:50.921891", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:13:56.224773", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:14:54.719345", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:14:55.912204", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:01.215925", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:02.016051", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.8\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:15:04.189747", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:08.919847", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:14.235903", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:18.915632", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:19.019848", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.4\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:15:24.237289", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:28.915334", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:34.228432", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:35.932370", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.8\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:15:38.918868", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:44.221219", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:48.913578", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:52.882818", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 36.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:15:54.215318", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:15:58.914876", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:04.219124", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:08.911772", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:09.566913", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 34.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:16:14.214351", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:18.924246", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:24.228906", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
+{"timestamp": "2025-08-19T10:16:26.493352", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 34.1\u00b0C sent to ThingSpeak"}

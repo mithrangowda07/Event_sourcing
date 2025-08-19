@@ -159,12 +159,15 @@ def dashboard():
 @app.route('/api/status')
 def get_status():
     """Get current sensor status and latest temperature."""
+    from event_logger import get_log_status
+    
     return jsonify({
         'active': sensor_active,
         'temperature': latest_temperature,
         'timestamp': latest_timestamp.isoformat() if latest_timestamp else None,
         'sensor_name': SENSOR_NAME,
-        'user_id': USER_ID
+        'user_id': USER_ID,
+        'logging': get_log_status()
     })
 
 @app.route('/api/start', methods=['POST'])
@@ -237,5 +240,30 @@ if __name__ == '__main__':
     
     print("=" * 50)
     
-    # Start Flask app
-    app.run(host='0.0.0.0', port=SIMULATION_PORT, debug=False)
+    # Check local logging configuration
+    from event_logger import LOGS_DIR
+    print("✅ Local logging enabled - logs stored in logs/ directory")
+    print(f"📁 Log directory: {LOGS_DIR}")
+    
+    # Initialize AI monitoring
+    try:
+        from ai_monitor import ai_monitor
+        print("🤖 AI monitoring module loaded")
+        # Start AI monitoring automatically
+        ai_monitor.start_monitoring()
+    except ImportError:
+        print("⚠️  AI monitoring module not available")
+    except Exception as e:
+        print(f"⚠️  AI monitoring error: {e}")
+    
+    print("=" * 50)
+    
+    try:
+        # Start Flask app
+        app.run(host='0.0.0.0', port=SIMULATION_PORT, debug=False)
+    except KeyboardInterrupt:
+        print("\n⏹️  Shutting down sensor server...")
+        # Final log entry
+        from event_logger import force_upload_logs
+        force_upload_logs()
+        print("👋 Goodbye!")

@@ -1,0 +1,90 @@
+{"timestamp": "2025-08-18T11:57:11.306247", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:57:53.115350", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:57:54.631106", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:58:14.797136", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.1\u00b0C"}
+{"timestamp": "2025-08-18T11:58:15.986207", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 37.1\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-18T11:58:21.690017", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:58:21.705952", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 37.1\u00b0C"}
+{"timestamp": "2025-08-18T11:58:30.991376", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 36.2\u00b0C"}
+{"timestamp": "2025-08-18T11:58:32.143863", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 36.2\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-18T11:58:32.301770", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:58:32.317709", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 36.2\u00b0C"}
+{"timestamp": "2025-08-18T11:58:41.986646", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:58:42.002802", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 36.2\u00b0C"}
+{"timestamp": "2025-08-18T11:58:47.148145", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.2\u00b0C"}
+{"timestamp": "2025-08-18T11:58:48.313694", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.2\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-18T11:58:52.310612", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:58:52.326519", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 38.2\u00b0C"}
+{"timestamp": "2025-08-18T11:59:01.996457", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:59:02.012345", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 38.2\u00b0C"}
+{"timestamp": "2025-08-18T11:59:03.318269", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.6\u00b0C"}
+{"timestamp": "2025-08-18T11:59:04.465353", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-18T11:59:12.297475", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:59:12.326544", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 38.6\u00b0C"}
+{"timestamp": "2025-08-18T11:59:19.469562", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.6\u00b0C"}
+{"timestamp": "2025-08-18T11:59:20.597195", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-18T11:59:21.985445", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:59:21.991027", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 39.6\u00b0C"}
+{"timestamp": "2025-08-18T11:59:32.308462", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-18T11:59:32.325543", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 39.6\u00b0C"}
+{"timestamp": "2025-08-18T11:59:35.600660", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.4\u00b0C"}
+{"timestamp": "2025-08-18T11:59:36.730533", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.4\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:20:52.515808", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 35.3\u00b0C"}
+{"timestamp": "2025-08-19T10:20:54.317249", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 35.3\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:21:09.323279", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 36.6\u00b0C"}
+{"timestamp": "2025-08-19T10:21:11.019848", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 36.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:21:26.025320", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 35.3\u00b0C"}
+{"timestamp": "2025-08-19T10:21:27.719055", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 35.3\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:21:42.725943", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.2\u00b0C"}
+{"timestamp": "2025-08-19T10:21:44.630185", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 37.2\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:21:59.635308", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.1\u00b0C"}
+{"timestamp": "2025-08-19T10:22:01.439590", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.1\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:22:16.444612", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.5\u00b0C"}
+{"timestamp": "2025-08-19T10:22:18.240176", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.5\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:22:33.244787", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.6\u00b0C"}
+{"timestamp": "2025-08-19T10:22:35.070148", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:22:50.076478", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.9\u00b0C"}
+{"timestamp": "2025-08-19T10:22:52.076467", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:23:07.081905", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 40.0\u00b0C"}
+{"timestamp": "2025-08-19T10:23:09.033017", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 40.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:23:24.038165", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.2\u00b0C"}
+{"timestamp": "2025-08-19T10:23:25.886951", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.2\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:23:40.893059", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.2\u00b0C"}
+{"timestamp": "2025-08-19T10:23:42.621082", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.2\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:23:57.626408", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 40.0\u00b0C"}
+{"timestamp": "2025-08-19T10:23:59.599014", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 40.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:24:14.604790", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 40.0\u00b0C"}
+{"timestamp": "2025-08-19T10:24:16.383540", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 40.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:24:31.389211", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.0\u00b0C"}
+{"timestamp": "2025-08-19T10:24:33.194646", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:24:48.199242", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.6\u00b0C"}
+{"timestamp": "2025-08-19T10:24:49.911179", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:25:04.915468", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.7\u00b0C"}
+{"timestamp": "2025-08-19T10:25:06.562116", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.7\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:25:21.566907", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.8\u00b0C"}
+{"timestamp": "2025-08-19T10:25:23.369111", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.8\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:25:38.378420", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 40.0\u00b0C"}
+{"timestamp": "2025-08-19T10:25:40.138398", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 40.0\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:25:55.143946", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.6\u00b0C"}
+{"timestamp": "2025-08-19T10:25:56.902297", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 38.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:26:11.907874", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.6\u00b0C"}
+{"timestamp": "2025-08-19T10:26:13.880764", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 37.6\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:26:28.886186", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.4\u00b0C"}
+{"timestamp": "2025-08-19T10:26:31.111346", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 39.4\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:26:46.116442", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.8\u00b0C"}
+{"timestamp": "2025-08-19T10:26:59.246871", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-19T10:26:59.255959", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 37.8\u00b0C"}
+{"timestamp": "2025-08-19T10:27:01.349405", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.1\u00b0C"}
+{"timestamp": "2025-08-19T10:27:16.357277", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 38.9\u00b0C"}
+{"timestamp": "2025-08-19T10:27:31.363883", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.8\u00b0C"}
+{"timestamp": "2025-08-19T10:27:56.695680", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 36.4\u00b0C"}
+{"timestamp": "2025-08-19T10:27:59.252205", "type": "data", "component": "sensor", "event_type": "identity_verified", "description": "Client identity verified: RASPBERRY_PI_SENSOR_2024"}
+{"timestamp": "2025-08-19T10:27:59.283536", "type": "data", "component": "sensor", "event_type": "local_api_request", "description": "Temperature data requested by local UI: 36.4\u00b0C"}
+{"timestamp": "2025-08-19T10:28:11.742541", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 35.8\u00b0C"}
+{"timestamp": "2025-08-19T10:28:26.755238", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 36.7\u00b0C"}
+{"timestamp": "2025-08-19T10:28:28.805086", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 36.7\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:28:43.809441", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 36.9\u00b0C"}
+{"timestamp": "2025-08-19T10:28:45.783820", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 36.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:29:00.789199", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 37.9\u00b0C"}
+{"timestamp": "2025-08-19T10:29:02.469242", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 37.9\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-19T10:29:17.474522", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 39.0\u00b0C"}

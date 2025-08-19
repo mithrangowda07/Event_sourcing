@@ -1,0 +1,18 @@
+{"timestamp": "2025-08-18T11:53:26.828985", "type": "sensor", "event_type": "test_start", "description": "AI integration test started"}
+{"timestamp": "2025-08-18T11:53:26.833601", "type": "sensor", "event_type": "sensor_on", "description": "Test sensor activated"}
+{"timestamp": "2025-08-19T10:09:40.393372", "type": "sensor", "event_type": "sensor_started", "description": "Temperature sensor simulation started"}
+ure": 26.6}
+{"timestamp": "2025-08-19T10:09:57.304748", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 26.0\u00b0C", "temperature": 26.0}
+{"timestamp": "2025-08-19T10:10:14.280821", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 24.3\u00b0C", "temperature": 24.3}
+{"timestamp": "2025-08-19T10:10:31.228404", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 25.1\u00b0C", "temperature": 25.1}
+{"timestamp": "2025-08-19T10:10:48.022079", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 25.5\u00b0C", "temperature": 25.5}
+{"timestamp": "2025-08-19T10:11:04.844190", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 25.7\u00b0C", "temperature": 25.7}
+{"timestamp": "2025-08-19T10:11:21.621893", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 26.9\u00b0C", "temperature": 26.9}
+{"timestamp": "2025-08-19T10:11:37.837760", "type": "sensor", "event_type": "sensor_stopped", "description": "Temperature sensor simulation stopped"}
+{"timestamp": "2025-08-19T10:15:00.031178", "type": "sensor", "event_type": "sensor_started", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T10:15:00.033299", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 38.8\u00b0C", "temperature": 38.8}
+{"timestamp": "2025-08-19T10:15:17.022874", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 39.4\u00b0C", "temperature": 39.4}
+{"timestamp": "2025-08-19T10:15:34.024370", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 38.8\u00b0C", "temperature": 38.8}
+{"timestamp": "2025-08-19T10:15:50.945550", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 36.9\u00b0C", "temperature": 36.9}
+{"timestamp": "2025-08-19T10:16:07.886912", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 34.9\u00b0C", "temperature": 34.9}
+{"timestamp": "2025-08-19T10:16:24.572036", "type": "sensor", "event_type": "temperature_reading", "description": "Temperature: 34.1\u00b0C", "temperature": 34.1}

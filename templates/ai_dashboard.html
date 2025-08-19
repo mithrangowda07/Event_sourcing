@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI System Monitor - Gemini Powered</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+        .ai-message {
+            background-color: #e9ecef;
+            color: #212529;
+            margin-right: auto;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .ai-icon {
+            color: #667eea;
+            font-size: 2rem;
+        }
+        .monitoring-active {
+            color: #28a745;
+        }
+        .monitoring-inactive {
+            color: #dc3545;
+        }
+        .log-entry {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem 0;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            border-left: 3px solid #007bff;
+        }
+        .error-log {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .sensor-log {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .data-log {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Header -->
+            <div class="col-12 mb-4">
+                <div class="status-card p-4 text-center">
+                    <h1><i class="fas fa-robot ai-icon"></i> AI System Monitor</h1>
+                    <p class="lead mb-0">Powered by Gemini AI - Intelligent System Monitoring & Chat</p>
+                </div>
+            </div>
+
+            <!-- AI Status Panel -->
+            <div class="col-md-4 mb-4">
+                <div class="status-card p-4 h-100">
+                    <h4><i class="fas fa-chart-line"></i> AI Monitoring Status</h4>
+                    <div id="aiStatus">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="me-2">Status:</span>
+                            <span id="monitoringStatus" class="badge bg-secondary">Loading...</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Last Analysis:</small><br>
+                            <span id="lastAnalysis">Never</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Alert Count:</small><br>
+                            <span id="alertCount">0</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button id="startMonitoring" class="btn btn-success btn-sm">
+                                <i class="fas fa-play"></i> Start Monitoring
+                            </button>
+                            <button id="stopMonitoring" class="btn btn-danger btn-sm">
+                                <i class="fas fa-stop"></i> Stop Monitoring
+                            </button>
+                            <button id="triggerAnalysis" class="btn btn-primary btn-sm">
+                                <i class="fas fa-search"></i> Analyze Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="col-md-8 mb-4">
+                <div class="status-card p-4 h-100">
+                    <h4><i class="fas fa-comments"></i> AI Chat Assistant</h4>
+                    <div class="chat-container mb-3" id="chatContainer">
+                        <div class="message ai-message">
+                            <strong>AI Assistant:</strong> Hello! I'm your AI system monitoring assistant. I can help you analyze system logs, detect issues, and provide recommendations. Ask me anything about your system!
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="messageInput" class="form-control" placeholder="Ask about system status, errors, or request analysis...">
+                        <button id="sendMessage" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Logs -->
+            <div class="col-12">
+                <div class="status-card p-4">
+                    <h4><i class="fas fa-file-alt"></i> Recent System Logs</h4>
+                    <div id="recentLogs">
+                        <p class="text-muted">Loading recent logs...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let chatHistory = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAIStatus();
+            loadRecentLogs();
+            
+            // Set up event listeners
+            document.getElementById('sendMessage').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            document.getElementById('startMonitoring').addEventListener('click', startMonitoring);
+            document.getElementById('stopMonitoring').addEventListener('click', stopMonitoring);
+            document.getElementById('triggerAnalysis').addEventListener('click', triggerAnalysis);
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadAIStatus, 30000);
+            setInterval(loadRecentLogs, 30000);
+        });
+
+        // Load AI monitoring status
+        async function loadAIStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                document.getElementById('monitoringStatus').textContent = 
+                    data.monitoring_active ? 'Active' : 'Inactive';
+                document.getElementById('monitoringStatus').className = 
+                    data.monitoring_active ? 'badge bg-success' : 'badge bg-danger';
+                
+                document.getElementById('lastAnalysis').textContent = 
+                    data.last_analysis ? new Date(data.last_analysis).toLocaleString() : 'Never';
+                
+                document.getElementById('alertCount').textContent = data.alert_count;
+                
+                // Update button states
+                document.getElementById('startMonitoring').disabled = data.monitoring_active;
+                document.getElementById('stopMonitoring').disabled = !data.monitoring_active;
+                
+            } catch (error) {
+                console.error('Error loading AI status:', error);
+            }
+        }
+
+        // Load recent logs
+        async function loadRecentLogs() {
+            try {
+                const response = await fetch('/api/logs');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayLogs(data.logs);
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+            }
+        }
+
+        // Display logs in the UI
+        function displayLogs(logs) {
+            const container = document.getElementById('recentLogs');
+            let html = '';
+            
+            let totalLogs = 0;
+            for (const [type, entries] of Object.entries(logs)) {
+                totalLogs += entries.length;
+            }
+            
+            if (totalLogs === 0) {
+                html = '<p class="text-muted">No recent logs available</p>';
+            } else {
+                for (const [type, entries] of Object.entries(logs)) {
+                    if (entries.length > 0) {
+                        html += `<h6 class="mt-3">${type.toUpperCase()} Events (${entries.length})</h6>`;
+                        entries.slice(-5).forEach(entry => {
+                            const timestamp = new Date(entry.timestamp).toLocaleString();
+                            let logClass = 'log-entry';
+                            
+                            if (type === 'error') logClass += ' error-log';
+                            else if (type === 'sensor') logClass += ' sensor-log';
+                            else if (type === 'data') logClass += ' data-log';
+                            
+                            html += `<div class="${logClass}">
+                                <strong>${timestamp}</strong>: ${formatLogEntry(entry, type)}
+                            </div>`;
+                        });
+                    }
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Format log entry for display
+        function formatLogEntry(entry, type) {
+            if (type === 'sensor') {
+                return `${entry.event_type}: ${entry.description}`;
+            } else if (type === 'error') {
+                return `${entry.component}: ${entry.error_message}`;
+            } else if (type === 'data') {
+                return `${entry.component}.${entry.event_type}: ${entry.description}`;
+            }
+            return JSON.stringify(entry);
+        }
+
+        // Send message to AI
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat('user', message);
+            input.value = '';
+            
+            // Show loading indicator
+            const loadingId = addMessageToChat('ai', 'Thinking...');
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Replace loading message with AI response
+                    replaceMessage(loadingId, 'ai', data.ai_response);
+                } else {
+                    replaceMessage(loadingId, 'ai', `Error: ${data.error}`);
+                }
+                
+            } catch (error) {
+                replaceMessage(loadingId, 'ai', `Error: ${error.message}`);
+            }
+        }
+
+        // Add message to chat container
+        function addMessageToChat(sender, message) {
+            const container = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            const messageId = 'msg-' + Date.now();
+            messageDiv.id = messageId;
+            messageDiv.className = `message ${sender}-message`;
+            
+            const senderName = sender === 'user' ? 'You' : 'AI Assistant';
+            messageDiv.innerHTML = `<strong>${senderName}:</strong> ${message}`;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            return messageId;
+        }
+
+        // Replace message in chat
+        function replaceMessage(messageId, sender, message) {
+            const messageDiv = document.getElementById(messageId);
+            if (messageDiv) {
+                const senderName = sender === 'user' ? 'You' : 'AI Assistant';
+                messageDiv.innerHTML = `<strong>${senderName}:</strong> ${message}`;
+            }
+        }
+
+        // Start AI monitoring
+        async function startMonitoring() {
+            try {
+                const response = await fetch('/api/start-monitoring', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessageToChat('ai', 'AI monitoring started successfully!');
+                    loadAIStatus();
+                } else {
+                    addMessageToChat('ai', `Error: ${data.error}`);
+                }
+            } catch (error) {
+                addMessageToChat('ai', `Error: ${error.message}`);
+            }
+        }
+
+        // Stop AI monitoring
+        async function stopMonitoring() {
+            try {
+                const response = await fetch('/api/stop-monitoring', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessageToChat('ai', 'AI monitoring stopped successfully!');
+                    loadAIStatus();
+                } else {
+                    addMessageToChat('ai', `Error: ${data.error}`);
+                }
+            } catch (error) {
+                addMessageToChat('ai', `Error: ${error.message}`);
+            }
+        }
+
+        // Trigger immediate analysis
+        async function triggerAnalysis() {
+            try {
+                const response = await fetch('/api/analyze', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessageToChat('ai', 'Analysis triggered! Check the console for detailed results.');
+                    loadAIStatus();
+                } else {
+                    addMessageToChat('ai', `Error: ${data.error}`);
+                }
+            } catch (error) {
+                addMessageToChat('ai', `Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
