@@ -1,2 +1,8 @@
 {"timestamp": "2025-08-18T11:58:14.796982", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
 {"timestamp": "2025-08-19T10:20:52.515686", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T11:27:25.355983", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T11:29:51.054372", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T11:31:40.265502", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T11:50:53.279539", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T12:00:34.135316", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-08-19T14:29:10.825136", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}

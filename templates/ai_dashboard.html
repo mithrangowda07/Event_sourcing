@@ -74,6 +74,19 @@
             border-left-color: #ffc107;
             background-color: #fff3cd;
         }
+        .analysis-content {
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .analysis-alert {
+            border-left: 4px solid #17a2b8;
+            background-color: #f8f9fa;
+        }
+        .analysis-alert h6 {
+            color: #17a2b8;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -146,6 +159,16 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Recent AI Analysis Results -->
+            <div class="col-12 mt-4">
+                <div class="status-card p-4">
+                    <h4><i class="fas fa-brain"></i> Recent AI Analysis Results</h4>
+                    <div id="recentAnalysis">
+                        <p class="text-muted">Loading recent analysis...</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -158,6 +181,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadAIStatus();
             loadRecentLogs();
+            loadRecentAnalysis();
             
             // Set up event listeners
             document.getElementById('sendMessage').addEventListener('click', sendMessage);
@@ -172,6 +196,7 @@
             // Auto-refresh every 30 seconds
             setInterval(loadAIStatus, 30000);
             setInterval(loadRecentLogs, 30000);
+            setInterval(loadRecentAnalysis, 30000);
         });
 
         // Load AI monitoring status
@@ -211,6 +236,50 @@
             } catch (error) {
                 console.error('Error loading logs:', error);
             }
+        }
+
+        // Load recent AI analysis results
+        async function loadRecentAnalysis() {
+            try {
+                const response = await fetch('/api/analysis');
+                const data = await response.json();
+                
+                if (data.success && data.recent_alerts && data.recent_alerts.length > 0) {
+                    displayAnalysis(data.recent_alerts);
+                } else {
+                    document.getElementById('recentAnalysis').innerHTML = 
+                        '<p class="text-muted">No recent analysis results available</p>';
+                }
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                document.getElementById('recentAnalysis').innerHTML = 
+                    '<p class="text-danger">Error loading analysis results</p>';
+            }
+        }
+
+        // Display analysis results in the UI
+        function displayAnalysis(analysisResults) {
+            const container = document.getElementById('recentAnalysis');
+            let html = '';
+            
+            analysisResults.forEach((alert, index) => {
+                const timestamp = new Date(alert.timestamp).toLocaleString();
+                const analysis = alert.analysis.replace(/\n/g, '<br>');
+                
+                html += `
+                    <div class="alert analysis-alert mb-3">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-robot me-2"></i>
+                            AI Analysis - ${timestamp}
+                        </h6>
+                        <div class="analysis-content" style="max-height: 300px; overflow-y: auto; font-size: 0.9rem;">
+                            ${analysis}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
         // Display logs in the UI
@@ -364,8 +433,12 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    addMessageToChat('ai', 'Analysis triggered! Check the console for detailed results.');
+                    addMessageToChat('ai', 'Analysis triggered! Results will appear below shortly.');
                     loadAIStatus();
+                    // Wait a moment for analysis to complete, then refresh
+                    setTimeout(() => {
+                        loadRecentAnalysis();
+                    }, 2000);
                 } else {
                     addMessageToChat('ai', `Error: ${data.error}`);
                 }

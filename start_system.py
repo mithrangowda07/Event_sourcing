@@ -107,6 +107,18 @@ def start_ui_server():
     except KeyboardInterrupt:
         print("⏹️  UI server stopped by user")
 
+def start_ai_chat_server():
+    """Start the AI chat server in a separate thread."""
+    try:
+        print("🤖 Starting AI chat server on port 5002...")
+        # Run AI chat server from root directory
+        subprocess.run([sys.executable, "ai_chat_server.py"], 
+                     cwd=Path("."), check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ AI chat server failed to start: {e}")
+    except KeyboardInterrupt:
+        print("⏹️  AI chat server stopped by user")
+
 def main():
     """Main startup function."""
     print_banner()
@@ -160,13 +172,18 @@ def main():
     print("\n🚀 Launching servers...")
     print("📱 Simulation Dashboard: http://<raspberry_pi_ip>:5000")
     print("🖥️  UI Dashboard: http://localhost:5001")
-    print("\n💡 Press Ctrl+C to stop both servers")
+    print("🤖 AI Chat Dashboard: http://localhost:5002")
+    print("\n💡 Press Ctrl+C to stop all servers")
     print("=" * 70)
     
     try:
         # Start simulation server in background thread
         simulation_thread = threading.Thread(target=start_simulation_server, daemon=True)
         simulation_thread.start()
+        
+        # Start AI chat server in background thread
+        ai_chat_thread = threading.Thread(target=start_ai_chat_server, daemon=True)
+        ai_chat_thread.start()
         
         # Start UI server in main thread
         start_ui_server()

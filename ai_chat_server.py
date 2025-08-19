@@ -107,6 +107,21 @@ def get_recent_logs():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/analysis')
+def get_recent_analysis():
+    """Get recent AI analysis results."""
+    try:
+        status = ai_monitor.get_system_status()
+        return jsonify({
+            'success': True,
+            'recent_alerts': status.get('recent_alerts', []),
+            'alert_count': status.get('alert_count', 0),
+            'last_analysis': status.get('last_analysis'),
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     print("🤖 AI Chat Server")
     print("=" * 50)
