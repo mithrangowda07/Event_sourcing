@@ -7,7 +7,7 @@ Flask application for AI-powered system monitoring and chat interface
 import os
 import json
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect
 from flask_cors import CORS
 from dotenv import load_dotenv
 from ai_monitor import ai_monitor
@@ -17,6 +17,7 @@ load_dotenv()
 
 # Configuration
 AI_CHAT_PORT = int(os.getenv("AI_CHAT_PORT", "5002"))
+UI_PORT = int(os.getenv("UI_PORT", "5001"))
 
 # Flask app initialization
 app = Flask(__name__)
@@ -24,8 +25,8 @@ CORS(app)
 
 @app.route('/')
 def ai_dashboard():
-    """Main AI dashboard page."""
-    return render_template('ai_dashboard.html')
+    """Redirect to unified Events page in UI server."""
+    return redirect(f"http://127.0.0.1:{UI_PORT}/events", code=302)
 
 @app.route('/api/chat', methods=['POST'])
 def chat_with_ai():

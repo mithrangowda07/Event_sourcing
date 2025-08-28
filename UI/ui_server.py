@@ -26,6 +26,7 @@ THINGSPEAK_READ_KEY = os.getenv("THINGSPEAK_READ_API_KEY", "YOUR_THINGSPEAK_READ
 THINGSPEAK_CHANNEL_ID = os.getenv("THINGSPEAK_CHANNEL_ID", "YOUR_CHANNEL_ID")
 THINGSPEAK_FIELD = os.getenv("THINGSPEAK_FIELD", "field1")
 UI_PORT = int(os.getenv("UI_PORT", "5001"))
+AI_CHAT_PORT = int(os.getenv("AI_CHAT_PORT", "5002"))
 
 # Flask app initialization
 app = Flask(__name__)
@@ -183,6 +184,11 @@ def dashboard():
     """Main dashboard page."""
     return render_template('ui_dashboard.html')
 
+@app.route('/events')
+def events_page():
+    """All events page."""
+    return render_template('events.html')
+
 @app.route('/fetch')
 def fetch_data():
     """AJAX endpoint to get temperature data."""
@@ -227,6 +233,96 @@ def get_status():
         'user_id': USER_ID,
         'cloud_channel': THINGSPEAK_CHANNEL_ID
     })
+
+# ----- AI proxy endpoints (to AI Chat Server) -----
+@app.route('/api/ai/status')
+def api_ai_status():
+    try:
+        resp = requests.get(f'http://127.0.0.1:{AI_CHAT_PORT}/api/status', timeout=5)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/analysis')
+def api_ai_analysis():
+    try:
+        resp = requests.get(f'http://127.0.0.1:{AI_CHAT_PORT}/api/analysis', timeout=5)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/analyze', methods=['POST'])
+def api_ai_analyze():
+    try:
+        resp = requests.post(f'http://127.0.0.1:{AI_CHAT_PORT}/api/analyze', timeout=10)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/start-monitoring', methods=['POST'])
+def api_ai_start():
+    try:
+        resp = requests.post(f'http://127.0.0.1:{AI_CHAT_PORT}/api/start-monitoring', timeout=5)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/stop-monitoring', methods=['POST'])
+def api_ai_stop():
+    try:
+        resp = requests.post(f'http://127.0.0.1:{AI_CHAT_PORT}/api/stop-monitoring', timeout=5)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/ai/chat', methods=['POST'])
+def api_ai_chat():
+    try:
+        payload = request.get_json() or {}
+        resp = requests.post(f'http://127.0.0.1:{AI_CHAT_PORT}/api/chat', json=payload, timeout=20)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/logs')
+def api_logs():
+    """Get logs over a configurable time window (minutes query param)."""
+    try:
+        minutes = int(request.args.get('minutes', '10'))
+    except Exception:
+        minutes = 10
+
+    # Reuse AI monitor style collection if available; otherwise read logs locally
+    logs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+    result = {'sensor': [], 'error': [], 'data': []}
+
+    from datetime import datetime, timedelta
+    cutoff_time = None if minutes <= 0 else (datetime.now() - timedelta(minutes=minutes))
+
+    for log_type in result.keys():
+        log_file = os.path.join(logs_dir, f"{log_type}_events.log")
+        if os.path.exists(log_file):
+            try:
+                with open(log_file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        try:
+                            entry = json.loads(line.strip())
+                            ts = entry.get('timestamp')
+                            if ts:
+                                try:
+                                    entry_time = datetime.fromisoformat(ts)
+                                except Exception:
+                                    entry_time = None
+                            else:
+                                entry_time = None
+                            if cutoff_time is None or entry_time is None or entry_time >= cutoff_time:
+                                result[log_type].append(entry)
+                        except Exception:
+                            continue
+            except Exception as e:
+                print(f"Error reading log file {log_file}: {e}")
+
+    return jsonify({'success': True, 'logs': result})
 
 if __name__ == '__main__':
     print("🖥️  Temperature Monitoring User Interface Server")

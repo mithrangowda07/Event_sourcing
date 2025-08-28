@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All System Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .status-card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 15px; }
+        .log-entry { font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 0.5rem 0.75rem; border-left: 4px solid #6c757d; background-color: #f8f9fa; border-radius: 0.25rem; }
+        .log-sensor { border-left-color: #28a745; background-color: #d4edda; }
+        .log-error { border-left-color: #dc3545; background-color: #f8d7da; }
+        .log-data { border-left-color: #ffc107; background-color: #fff3cd; }
+        .controls .form-check { margin-right: 1rem; }
+        .sticky-top-controls { position: sticky; top: 0; z-index: 1020; background: white; padding-top: 0.75rem; }
+        .nowrap { white-space: nowrap; }
+        .badge-type { text-transform: uppercase; }
+        
+        /* AI Chat Styles */
+        .ai-chat-container { height: 100%; display: flex; flex-direction: column; }
+        .ai-status-bar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.75rem; border-radius: 10px 10px 0 0; margin: -1rem -1rem 1rem -1rem; }
+        .ai-chat-messages { flex: 1; overflow-y: auto; max-height: 300px; padding: 0.5rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 1rem; }
+        .ai-message { margin-bottom: 0.75rem; padding: 0.5rem; border-radius: 8px; background: white; border-left: 3px solid #667eea; }
+        .ai-message.user { background: #e3f2fd; border-left-color: #2196f3; }
+        .ai-message.ai { background: #f3e5f5; border-left-color: #9c27b0; }
+        .ai-message.error { background: #ffebee; border-left-color: #f44336; }
+        .ai-message.loading { background: #fff3e0; border-left-color: #ff9800; }
+        .ai-input-group { margin-top: auto; }
+        .ai-controls { margin-top: 1rem; }
+        .ai-controls .btn { font-size: 0.8rem; padding: 0.375rem 0.75rem; }
+        
+        /* AI Response Content Styling */
+        .ai-response-content { 
+            line-height: 1.5; 
+            font-size: 0.9rem;
+            white-space: pre-line;
+        }
+        .ai-response-content strong { 
+            color: #2c3e50; 
+            font-weight: 600; 
+        }
+        .ai-response-content em { 
+            color: #7f8c8d; 
+            font-style: italic; 
+        }
+        .ai-response-content code { 
+            background-color: #ecf0f1; 
+            padding: 0.2rem 0.4rem; 
+            border-radius: 3px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 0.85rem; 
+            color: #e74c3c; 
+        }
+        .ai-response-content br + br { 
+            margin-top: 0.5rem; 
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .ai-chat-container { height: auto; min-height: 400px; }
+            .ai-chat-messages { max-height: 250px; }
+        }
+        
+        /* Scrollbar styling */
+        .ai-chat-messages::-webkit-scrollbar { width: 6px; }
+        .ai-chat-messages::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        .ai-chat-messages::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        .ai-chat-messages::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+    <link rel="icon" href="data:,">
+    <!-- Prevent favicon 404s -->
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-3">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11">
+                <div class="status-card p-3 mb-3">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <div class="mb-2">
+                            <h3 class="mb-0"><i class="fas fa-stream me-2"></i>All System Events</h3>
+                            <small class="text-muted">View and filter sensor, data, and error events</small>
+                        </div>
+                        <div class="mb-2">
+                            <a href="/" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card p-3 sticky-top-controls">
+                    <div class="row g-3 align-items-end controls">
+                        <div class="col-md-4">
+                            <label for="minutesInput" class="form-label">Time window (minutes)</label>
+                            <div class="input-group">
+                                <input type="number" min="0" max="1000000" step="1" class="form-control" id="minutesInput" value="0">
+                                <button class="btn btn-outline-secondary" type="button" id="allTimeBtn" title="Show all events">All Time</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchInput" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search in text, component, type...">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-label">Types</div>
+                            <div class="d-flex flex-wrap">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="sensor" id="filterSensor" checked>
+                                    <label class="form-check-label" for="filterSensor">Sensor</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="data" id="filterData" checked>
+                                    <label class="form-check-label" for="filterData">Data</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="error" id="filterError" checked>
+                                    <label class="form-check-label" for="filterError">Error</label>
+                                </div>
+                                <div class="ms-auto nowrap">
+                                    <button id="refreshBtn" class="btn btn-primary"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                                    <button id="generateTestBtn" class="btn btn-outline-success btn-sm ms-2" title="Generate test events for today"><i class="fas fa-plus me-1"></i> Test Events</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-lg-7">
+                        <div class="status-card p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="badge bg-secondary me-2" id="countBadge">0 events</span>
+                                    <small class="text-muted">Last updated <span id="lastUpdated">never</span></small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success me-1 badge-type" id="countSensor">0 SENSOR</span>
+                                    <span class="badge bg-warning text-dark me-1 badge-type" id="countData">0 DATA</span>
+                                    <span class="badge bg-danger badge-type" id="countError">0 ERROR</span>
+                                </div>
+                            </div>
+                            <div id="eventsContainer" style="max-height: 70vh; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="status-card p-3 h-100">
+                            <div class="ai-chat-container">
+                                <div class="ai-status-bar">
+                                    <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Assistant</h6>
+                                    <div class="small opacity-75">
+                                        <span id="aiMonitoring">Monitoring: Unknown</span> ·
+                                        <span id="aiLastAnalysis">Last: Never</span> ·
+                                        <span id="aiAlertCount">Alerts: 0</span>
+                                    </div>
+                                </div>
+                                
+                                <div id="recentAnalysis" class="mb-3">
+                                    <h6 class="text-muted mb-2">Recent Analysis</h6>
+                                    <div id="analysisContainer" style="max-height: 200px; overflow-y: auto;">
+                                        <p class="text-muted small">Loading analysis...</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-chat-messages" id="chatMessages">
+                                    <div class="ai-message ai">
+                                        <div class="small text-muted">AI Assistant</div>
+                                        <div>Hello! I can help analyze your system events. Ask me anything about the logs or start monitoring.</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-input-group">
+                                    <div class="input-group">
+                                        <input type="text" id="chatInput" class="form-control" placeholder="Ask about events, errors, or system status...">
+                                        <button id="chatSend" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-controls">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button id="btnStartAI" class="btn btn-success btn-sm">
+                                            <i class="fas fa-play me-1"></i>Start
+                                        </button>
+                                        <button id="btnStopAI" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-stop me-1"></i>Stop
+                                        </button>
+                                        <button id="btnAnalyzeNow" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-search me-1"></i>Analyze
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rawLogs = { sensor: [], data: [], error: [] };
+        let chatHistory = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('refreshBtn').addEventListener('click', loadLogs);
+            document.getElementById('minutesInput').addEventListener('change', loadLogs);
+            document.getElementById('searchInput').addEventListener('input', render);
+            document.getElementById('filterSensor').addEventListener('change', render);
+            document.getElementById('filterData').addEventListener('change', render);
+            document.getElementById('filterError').addEventListener('change', render);
+            document.getElementById('allTimeBtn').addEventListener('click', () => { document.getElementById('minutesInput').value = 0; loadLogs(); });
+            
+            // Ensure filters are checked by default
+            document.getElementById('filterSensor').checked = true;
+            document.getElementById('filterData').checked = true;
+            document.getElementById('filterError').checked = true;
+            
+            // AI Chat event listeners
+            document.getElementById('chatSend').addEventListener('click', sendChat);
+            document.getElementById('chatInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChat(); });
+            document.getElementById('btnStartAI').addEventListener('click', startAIMonitoring);
+            document.getElementById('btnStopAI').addEventListener('click', stopAIMonitoring);
+            document.getElementById('btnAnalyzeNow').addEventListener('click', triggerAnalysis);
+            document.getElementById('generateTestBtn').addEventListener('click', generateTestEvents);
+            
+            loadLogs();
+            loadAIStatus();
+            loadRecentAnalysis();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => { 
+                loadAIStatus(); 
+                loadRecentAnalysis(); 
+            }, 30000);
+        });
+
+        async function loadLogs() {
+            const minutes = Math.max(0, parseInt(document.getElementById('minutesInput').value || '1440', 10));
+            try {
+                const res = await fetch(`/api/logs?minutes=${encodeURIComponent(minutes)}`);
+                const data = await res.json();
+                if (data && data.success) {
+                    rawLogs = data.logs || { sensor: [], data: [], error: [] };
+                    document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+                    render();
+                } else {
+                    document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Failed to load logs</div>`;
+                }
+            } catch (e) {
+                document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Error loading logs: ${e}</div>`;
+            }
+        }
+
+        function render() {
+            const container = document.getElementById('eventsContainer');
+            const search = (document.getElementById('searchInput').value || '').toLowerCase();
+            const showSensor = document.getElementById('filterSensor').checked;
+            const showData = document.getElementById('filterData').checked;
+            const showError = document.getElementById('filterError').checked;
+
+            const selectedTypes = [];
+            if (showSensor) selectedTypes.push('sensor');
+            if (showData) selectedTypes.push('data');
+            if (showError) selectedTypes.push('error');
+            
+            // If nothing selected, show all
+            if (selectedTypes.length === 0) {
+                selectedTypes.push('sensor', 'data', 'error');
+                // reflect in UI for clarity
+                document.getElementById('filterSensor').checked = true;
+                document.getElementById('filterData').checked = true;
+                document.getElementById('filterError').checked = true;
+            }
+
+            let merged = [];
+            for (const [type, list] of Object.entries(rawLogs)) {
+                if (!selectedTypes.includes(type)) continue;
+                for (const entry of list) {
+                    merged.push({ type, ...entry });
+                }
+            }
+
+            // Sort by timestamp desc if present
+            merged.sort((a, b) => {
+                let ta = 0, tb = 0;
+                
+                // Parse timestamps more robustly
+                if (a.timestamp) {
+                    try {
+                        ta = new Date(a.timestamp).getTime();
+                    } catch (e) {
+                        // If parsing fails, try to extract numeric parts
+                        const match = a.timestamp.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+                        if (match) {
+                            ta = new Date(match[1], match[2]-1, match[3], match[4], match[5], match[6]).getTime();
+                        }
+                    }
+                }
+                
+                if (b.timestamp) {
+                    try {
+                        tb = new Date(b.timestamp).getTime();
+                    } catch (e) {
+                        // If parsing fails, try to extract numeric parts
+                        const match = b.timestamp.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+                        if (match) {
+                            tb = new Date(match[1], match[2]-1, match[3], match[4], match[5], match[6]).getTime();
+                        }
+                    }
+                }
+                
+                // Sort by timestamp descending (newest first)
+                return tb - ta;
+            });
+
+            if (search) {
+                merged = merged.filter(e => JSON.stringify(e).toLowerCase().includes(search));
+            }
+
+            // Update counts
+            const counts = { sensor: 0, data: 0, error: 0 };
+            merged.forEach(e => counts[e.type] = (counts[e.type] || 0) + 1);
+            document.getElementById('countBadge').textContent = `${merged.length} events`;
+            document.getElementById('countSensor').textContent = `${counts.sensor || 0} SENSOR`;
+            document.getElementById('countData').textContent = `${counts.data || 0} DATA`;
+            document.getElementById('countError').textContent = `${counts.error || 0} ERROR`;
+
+            if (merged.length === 0) {
+                container.innerHTML = '<p class="text-muted">No events match your filters.</p>';
+                return;
+            }
+
+            const html = merged.map(renderEntry).join('');
+            container.innerHTML = html;
+        }
+
+        function renderEntry(entry) {
+            const t = sanitize(entry.type || '');
+            const ts = entry.timestamp ? new Date(entry.timestamp).toLocaleString() : 'Unknown';
+            let summary = '';
+            if (t === 'sensor') {
+                summary = `${sanitize(entry.event_type || '')}: ${sanitize(entry.description || '')}`;
+            } else if (t === 'error') {
+                summary = `${sanitize(entry.component || '')}: ${sanitize(entry.error_message || '')}`;
+            } else if (t === 'data') {
+                summary = `${sanitize(entry.component || '')}.${sanitize(entry.event_type || '')}: ${sanitize(entry.description || '')}`;
+            } else {
+                summary = sanitize(JSON.stringify(entry));
+            }
+            const cls = t === 'sensor' ? 'log-sensor' : (t === 'error' ? 'log-error' : (t === 'data' ? 'log-data' : ''));
+            return `
+                <div class="log-entry ${cls} mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="fw-bold">${ts}</div>
+                            <div>${summary}</div>
+                        </div>
+                        <span class="badge badge-type ${badgeClass(t)}">${t.toUpperCase()}</span>
+                    </div>
+                    <details class="mt-2">
+                        <summary class="text-muted">Details</summary>
+                        <pre class="mb-0" style="white-space: pre-wrap;">${sanitize(JSON.stringify(entry, null, 2))}</pre>
+                    </details>
+                </div>
+            `;
+        }
+
+        function sanitize(str) {
+            return String(str).replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+        }
+
+        function badgeClass(t) {
+            if (t === 'sensor') return 'bg-success';
+            if (t === 'error') return 'bg-danger';
+            if (t === 'data') return 'bg-warning text-dark';
+            return 'bg-secondary';
+        }
+
+        // AI Functions
+        async function loadAIStatus() {
+            try {
+                const r = await fetch('/api/ai/status');
+                const d = await r.json();
+                if (d.success) {
+                    const active = d.monitoring_active;
+                    document.getElementById('aiMonitoring').textContent = `Monitoring: ${active ? 'Active' : 'Inactive'}`;
+                    document.getElementById('aiLastAnalysis').textContent = `Last: ${d.last_analysis ? new Date(d.last_analysis).toLocaleString() : 'Never'}`;
+                    document.getElementById('aiAlertCount').textContent = `Alerts: ${d.alert_count || 0}`;
+                    
+                    // Update button states
+                    document.getElementById('btnStartAI').disabled = active;
+                    document.getElementById('btnStopAI').disabled = !active;
+                }
+            } catch (e) {
+                document.getElementById('aiMonitoring').textContent = 'Monitoring: Error';
+            }
+        }
+
+        async function loadRecentAnalysis() {
+            try {
+                const r = await fetch('/api/ai/analysis');
+                const d = await r.json();
+                const container = document.getElementById('analysisContainer');
+                if (d.success && d.recent_alerts && d.recent_alerts.length) {
+                    const html = d.recent_alerts.map(a => {
+                        const ts = new Date(a.timestamp).toLocaleString();
+                        const text = (a.analysis || '').replace(/\n/g, '<br>');
+                        return `<div class="mb-2 p-2 border rounded bg-light"><div class="small text-muted">${ts}</div><div style="white-space:pre-wrap; font-size: 0.85rem;">${text}</div></div>`;
+                    }).join('');
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p class="text-muted small">No recent analysis</p>';
+                }
+            } catch (e) {
+                document.getElementById('analysisContainer').innerHTML = '<p class="text-danger small">Error loading analysis</p>';
+            }
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            // Add user message
+            addChatMessage('user', msg);
+            input.value = '';
+            
+            // Add loading message
+            const loadingId = addChatMessage('loading', 'Thinking...');
+            
+            try {
+                const r = await fetch('/api/ai/chat', { 
+                    method: 'POST', 
+                    headers: {'Content-Type':'application/json'}, 
+                    body: JSON.stringify({ message: msg })
+                });
+                const d = await r.json();
+                
+                if (d.success) {
+                    replaceChatMessage(loadingId, 'ai', d.ai_response || 'No response');
+                } else {
+                    replaceChatMessage(loadingId, 'error', d.error || 'Error occurred');
+                }
+            } catch (e) {
+                replaceChatMessage(loadingId, 'error', e.message);
+            }
+        }
+
+        function addChatMessage(type, content) {
+            const container = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            const msgId = 'msg-' + Date.now();
+            msgDiv.id = msgId;
+            msgDiv.className = `ai-message ${type}`;
+            
+            const sender = type === 'user' ? 'You' : (type === 'ai' ? 'AI Assistant' : 'System');
+            msgDiv.innerHTML = `<div class="small text-muted">${sender}</div><div>${sanitize(content)}</div>`;
+            
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            return msgId;
+        }
+
+        function replaceChatMessage(msgId, type, content) {
+            const msgDiv = document.getElementById(msgId);
+            if (msgDiv) {
+                const sender = type === 'user' ? 'You' : (type === 'ai' ? 'AI Assistant' : 'System');
+                msgDiv.className = `ai-message ${type}`;
+                
+                // Format AI responses with proper HTML formatting
+                let formattedContent = content;
+                if (type === 'ai') {
+                    // Convert markdown-style formatting to HTML
+                    formattedContent = formatAIResponse(content);
+                }
+                
+                msgDiv.innerHTML = `<div class="small text-muted">${sender}</div><div class="ai-response-content">${formattedContent}</div>`;
+            }
+        }
+
+        function formatAIResponse(text) {
+            if (!text) return '';
+            
+            // Replace line breaks with <br> tags
+            let formatted = text.replace(/\n/g, '<br>');
+            
+            // Format **bold** text
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Format *italic* text
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Format bullet points
+            formatted = formatted.replace(/^\s*•\s*/gm, '• ');
+            formatted = formatted.replace(/^\s*-\s*/gm, '• ');
+            
+            // Format numbered lists
+            formatted = formatted.replace(/^\s*(\d+)\.\s*/gm, '$1. ');
+            
+            // Add spacing around sections
+            formatted = formatted.replace(/(<br>)([A-Z][^<]*:)/g, '$1<br><br><strong>$2</strong>');
+            
+            // Format code blocks (simple)
+            formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-light px-1 rounded">$1</code>');
+            
+            return formatted;
+        }
+
+        async function startAIMonitoring() {
+            try {
+                await fetch('/api/ai/start-monitoring', {method: 'POST'});
+                loadAIStatus();
+                addChatMessage('ai', 'AI monitoring started successfully!');
+            } catch (e) {
+                addChatMessage('error', `Failed to start monitoring: ${e.message}`);
+            }
+        }
+
+        async function stopAIMonitoring() {
+            try {
+                await fetch('/api/ai/stop-monitoring', {method: 'POST'});
+                loadAIStatus();
+                addChatMessage('ai', 'AI monitoring stopped successfully!');
+            } catch (e) {
+                addChatMessage('error', `Failed to stop monitoring: ${e.message}`);
+            }
+        }
+
+        async function triggerAnalysis() {
+            try {
+                await fetch('/api/ai/analyze', {method: 'POST'});
+                addChatMessage('ai', 'Analysis triggered! Results will appear above shortly.');
+                setTimeout(loadRecentAnalysis, 2000);
+            } catch (e) {
+                addChatMessage('error', `Failed to trigger analysis: ${e.message}`);
+            }
+        }
+
+        async function generateTestEvents() {
+            try {
+                const now = new Date();
+                const today = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+                
+                // Create test events for today
+                const testEvents = [
+                    {
+                        timestamp: new Date().toISOString(),
+                        type: 'sensor',
+                        event_type: 'test_temperature',
+                        description: `Test temperature reading: ${(20 + Math.random() * 10).toFixed(1)}°C`
+                    },
+                    {
+                        timestamp: new Date(Date.now() - 60000).toISOString(), // 1 minute ago
+                        type: 'data',
+                        component: 'test',
+                        event_type: 'data_generated',
+                        description: 'Test data event generated for today'
+                    },
+                    {
+                        timestamp: new Date(Date.now() - 120000).toISOString(), // 2 minutes ago
+                        type: 'error',
+                        component: 'test',
+                        error_message: 'Simulated test error for demonstration'
+                    }
+                ];
+
+                // Add to rawLogs
+                testEvents.forEach(event => {
+                    if (event.type === 'sensor') rawLogs.sensor.unshift(event);
+                    else if (event.type === 'data') rawLogs.data.unshift(event);
+                    else if (event.type === 'error') rawLogs.error.unshift(event);
+                });
+
+                // Re-render
+                render();
+                addChatMessage('ai', `Generated ${testEvents.length} test events for today!`);
+                
+            } catch (e) {
+                addChatMessage('error', `Failed to generate test events: ${e.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
+
+

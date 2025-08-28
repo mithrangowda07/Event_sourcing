@@ -29,18 +29,21 @@ class AIMonitor:
         self.monitoring_active = False
         self.alert_history = []
         self.chat_history = []
+        self.verbose = os.getenv("AI_VERBOSE", "0") not in ("0", "false", "False", "")
         
     def start_monitoring(self):
         """Start continuous AI monitoring."""
         self.monitoring_active = True
         monitor_thread = threading.Thread(target=self._monitoring_loop, daemon=True)
         monitor_thread.start()
-        print("🤖 AI monitoring started - analyzing logs every 30 seconds")
+        if self.verbose:
+            print("🤖 AI monitoring started - analyzing logs every 30 seconds")
     
     def stop_monitoring(self):
         """Stop AI monitoring."""
         self.monitoring_active = False
-        print("⏹️ AI monitoring stopped")
+        if self.verbose:
+            print("⏹️ AI monitoring stopped")
     
     def _monitoring_loop(self):
         """Continuous monitoring loop."""
@@ -136,7 +139,8 @@ class AIMonitor:
     
     def analyze_system_logs(self):
         """Main analysis function."""
-        print(f"\n🔍 AI Analysis at {datetime.now().strftime('%H:%M:%S')}")
+        if self.verbose:
+            print(f"\n🔍 AI Analysis at {datetime.now().strftime('%H:%M:%S')}")
         
         # Collect recent logs
         recent_logs = self.collect_recent_logs(minutes=5)
@@ -144,10 +148,12 @@ class AIMonitor:
         # Check if there are any logs to analyze
         total_logs = sum(len(logs) for logs in recent_logs.values())
         if total_logs == 0:
-            print("ℹ️ No recent logs to analyze")
+            if self.verbose:
+                print("ℹ️ No recent logs to analyze")
             return
         
-        print(f"📊 Analyzing {total_logs} recent log entries...")
+        if self.verbose:
+            print(f"📊 Analyzing {total_logs} recent log entries...")
         
         # Perform AI analysis
         analysis = self.analyze_with_gemini(recent_logs, "system health and error detection")
@@ -159,14 +165,15 @@ class AIMonitor:
     
     def _process_analysis_results(self, analysis: str):
         """Process and display AI analysis results."""
-        print("\n" + "="*60)
-        print("🤖 GEMINI AI ANALYSIS RESULTS")
-        print("="*60)
-        print(analysis)
-        print("="*60)
+        if self.verbose:
+            print("\n" + "="*60)
+            print("🤖 GEMINI AI ANALYSIS RESULTS")
+            print("="*60)
+            print(analysis)
+            print("="*60)
         
         # Extract critical issues
-        if "Critical" in analysis or "High" in analysis:
+        if self.verbose and ("Critical" in analysis or "High" in analysis):
             print("🚨 CRITICAL ISSUES DETECTED - IMMEDIATE ATTENTION REQUIRED!")
         
         # Store in alert history
