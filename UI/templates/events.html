@@ -117,6 +117,8 @@
                                 </div>
                                 <div class="ms-auto nowrap">
                                     <button id="refreshBtn" class="btn btn-primary"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                                    <button id="forceRefreshBtn" class="btn btn-outline-warning btn-sm ms-2" title="Force refresh and clear cache"><i class="fas fa-redo me-1"></i> Force</button>
+                                    <button id="checkCountBtn" class="btn btn-outline-info btn-sm ms-2" title="Check current log counts"><i class="fas fa-info-circle me-1"></i> Count</button>
                                     <button id="generateTestBtn" class="btn btn-outline-success btn-sm ms-2" title="Generate test events for today"><i class="fas fa-plus me-1"></i> Test Events</button>
                                 </div>
                             </div>
@@ -201,17 +203,14 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('refreshBtn').addEventListener('click', loadLogs);
+            document.getElementById('forceRefreshBtn').addEventListener('click', forceRefreshLogs);
+            document.getElementById('checkCountBtn').addEventListener('click', checkLogCounts);
             document.getElementById('minutesInput').addEventListener('change', loadLogs);
             document.getElementById('searchInput').addEventListener('input', render);
             document.getElementById('filterSensor').addEventListener('change', render);
             document.getElementById('filterData').addEventListener('change', render);
             document.getElementById('filterError').addEventListener('change', render);
             document.getElementById('allTimeBtn').addEventListener('click', () => { document.getElementById('minutesInput').value = 0; loadLogs(); });
-            
-            // Ensure filters are checked by default
-            document.getElementById('filterSensor').checked = true;
-            document.getElementById('filterData').checked = true;
-            document.getElementById('filterError').checked = true;
             
             // AI Chat event listeners
             document.getElementById('chatSend').addEventListener('click', sendChat);
@@ -230,22 +229,69 @@
                 loadAIStatus(); 
                 loadRecentAnalysis(); 
             }, 30000);
+            
+            // Auto-refresh logs every 30 seconds
+            setInterval(() => { 
+                loadLogs(); 
+            }, 30000);
         });
 
         async function loadLogs() {
-            const minutes = Math.max(0, parseInt(document.getElementById('minutesInput').value || '1440', 10));
+            const minutes = Math.max(0, parseInt(document.getElementById('minutesInput').value || '0', 10));  // Changed from '1440' to '0'
+            const refreshBtn = document.getElementById('refreshBtn');
+            
+            // Show loading state
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...';
+            
             try {
-                const res = await fetch(`/api/logs?minutes=${encodeURIComponent(minutes)}`);
+                console.log(`Refreshing logs with minutes=${minutes}`);
+                const timestamp = Date.now(); // Cache buster
+                const res = await fetch(`/api/logs?minutes=${encodeURIComponent(minutes)}&_t=${timestamp}`);
                 const data = await res.json();
                 if (data && data.success) {
                     rawLogs = data.logs || { sensor: [], data: [], error: [] };
-                    document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+                    const now = new Date().toLocaleString();
+                    document.getElementById('lastUpdated').textContent = now;
+                    console.log(`Loaded ${Object.values(rawLogs).reduce((sum, arr) => sum + arr.length, 0)} total events at ${now}`);
                     render();
                 } else {
                     document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Failed to load logs</div>`;
                 }
             } catch (e) {
                 document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Error loading logs: ${e}</div>`;
+                console.error('Error loading logs:', e);
+            } finally {
+                // Restore button state
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> Refresh';
+            }
+        }
+
+        async function forceRefreshLogs() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...';
+
+            try {
+                const timestamp = Date.now(); // Cache buster
+                const res = await fetch(`/api/logs?minutes=0&_t=${timestamp}`); // Force all time
+                const data = await res.json();
+                if (data && data.success) {
+                    rawLogs = data.logs || { sensor: [], data: [], error: [] };
+                    const now = new Date().toLocaleString();
+                    document.getElementById('lastUpdated').textContent = now;
+                    console.log(`Forced refresh: Loaded ${Object.values(rawLogs).reduce((sum, arr) => sum + arr.length, 0)} total events at ${now}`);
+                    render();
+                } else {
+                    document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Failed to force refresh logs</div>`;
+                }
+            } catch (e) {
+                document.getElementById('eventsContainer').innerHTML = `<div class="alert alert-danger">Error force refreshing logs: ${e}</div>`;
+                console.error('Error force refreshing logs:', e);
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> Refresh';
             }
         }
 
@@ -576,6 +622,29 @@
                 
             } catch (e) {
                 addChatMessage('error', `Failed to generate test events: ${e.message}`);
+            }
+        }
+
+        async function checkLogCounts() {
+            try {
+                const r = await fetch('/api/logs/counts');
+                const d = await r.json();
+                if (d.success) {
+                    const sensorCount = d.sensor_count || 0;
+                    const dataCount = d.data_count || 0;
+                    const errorCount = d.error_count || 0;
+
+                    document.getElementById('countSensor').textContent = `${sensorCount} SENSOR`;
+                    document.getElementById('countData').textContent = `${dataCount} DATA`;
+                    document.getElementById('countError').textContent = `${errorCount} ERROR`;
+                    document.getElementById('countBadge').textContent = `${sensorCount + dataCount + errorCount} total events`;
+                    addChatMessage('ai', `Current log counts: SENSOR=${sensorCount}, DATA=${dataCount}, ERROR=${errorCount}`);
+                } else {
+                    addChatMessage('error', `Failed to check log counts: ${d.error || 'Unknown error'}`);
+                }
+            } catch (e) {
+                addChatMessage('error', `Error checking log counts: ${e.message}`);
+                console.error('Error checking log counts:', e);
             }
         }
     </script>

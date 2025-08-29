@@ -86,3 +86,8 @@
 {"timestamp": "2025-08-19T10:16:18.924246", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
 {"timestamp": "2025-08-19T10:16:24.228906", "type": "data", "component": "ui", "event_type": "local_api_request", "description": "Temperature data fetched from local server"}
 {"timestamp": "2025-08-19T10:16:26.493352", "type": "data", "component": "sensor", "event_type": "cloud_upload", "description": "Temperature 34.1\u00b0C sent to ThingSpeak"}
+{"timestamp": "2025-08-28T21:53:08.857204", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 27.3\u00b0C"}
+{"timestamp": "2025-08-28T21:53:25.193045", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 26.6\u00b0C"}
+{"timestamp": "2025-08-28T21:53:41.906626", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 28.0\u00b0C"}
+{"timestamp": "2025-08-28T21:53:58.171663", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 29.9\u00b0C"}
+{"timestamp": "2025-08-28T21:54:14.356550", "type": "data", "component": "sensor", "event_type": "reading_generated", "description": "New temperature reading: 31.9\u00b0C"}

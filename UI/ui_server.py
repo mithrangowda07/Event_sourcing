@@ -288,16 +288,21 @@ def api_ai_chat():
 def api_logs():
     """Get logs over a configurable time window (minutes query param)."""
     try:
-        minutes = int(request.args.get('minutes', '10'))
+        minutes = int(request.args.get('minutes', '0'))  # Changed from '10' to '0' to show all events by default
     except Exception:
-        minutes = 10
+        minutes = 0  # Changed from 10 to 0
 
-    # Reuse AI monitor style collection if available; otherwise read logs locally
-    logs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+    print(f"📊 Logs requested: minutes={minutes}")
+
+    # Read logs from simulation/logs directory instead of main logs directory
+    logs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'simulation', 'logs')
     result = {'sensor': [], 'error': [], 'data': []}
 
     from datetime import datetime, timedelta
     cutoff_time = None if minutes <= 0 else (datetime.now() - timedelta(minutes=minutes))
+    
+    print(f"📁 Reading logs from: {logs_dir}")
+    print(f"⏰ Cutoff time: {cutoff_time}")
 
     for log_type in result.keys():
         log_file = os.path.join(logs_dir, f"{log_type}_events.log")
@@ -319,10 +324,38 @@ def api_logs():
                                 result[log_type].append(entry)
                         except Exception:
                             continue
+                print(f"📝 {log_type}: {len(result[log_type])} events loaded")
             except Exception as e:
                 print(f"Error reading log file {log_file}: {e}")
+        else:
+            print(f"⚠️ Log file not found: {log_file}")
 
+    total_events = sum(len(events) for events in result.values())
+    print(f"🎯 Total events returned: {total_events}")
+    
     return jsonify({'success': True, 'logs': result})
+
+@app.route('/api/logs/counts')
+def api_log_counts():
+    """Get just the counts of events in each log file."""
+    try:
+        logs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'simulation', 'logs')
+        result = {'sensor_count': 0, 'error_count': 0, 'data_count': 0}
+        
+        for log_type in ['sensor', 'error', 'data']:
+            log_file = os.path.join(logs_dir, f"{log_type}_events.log")
+            if os.path.exists(log_file):
+                try:
+                    with open(log_file, 'r', encoding='utf-8') as f:
+                        count = sum(1 for line in f if line.strip())
+                    result[f'{log_type}_count'] = count
+                except Exception as e:
+                    print(f"Error counting {log_file}: {e}")
+        
+        print(f"📊 Counts requested: {result}")
+        return jsonify({'success': True, **result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("🖥️  Temperature Monitoring User Interface Server")

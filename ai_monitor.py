@@ -23,7 +23,11 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 
 class AIMonitor:
     def __init__(self):
-        self.logs_dir = "logs"
+        # Get the directory where this script is located and navigate to simulation/logs
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.logs_dir = os.path.join(script_dir, "simulation", "logs")
+        print(f"🔍 AI Monitor: Using logs directory: {self.logs_dir}")
+        print(f"🔍 AI Monitor: Script directory: {script_dir}")
         self.analysis_interval = 30  # seconds
         self.last_analysis = None
         self.monitoring_active = False

@@ -21,3 +21,18 @@
 {"timestamp": "2025-08-19T11:41:28.135641", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Max retries exceeded with url: /update (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x000001D62D1460D0>: Failed to resolve 'api.thingspeak.com' ([Errno 11001] getaddrinfo failed)\"))"}
 {"timestamp": "2025-08-19T11:41:43.140928", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Max retries exceeded with url: /update (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x000001D62D145E50>: Failed to resolve 'api.thingspeak.com' ([Errno 11001] getaddrinfo failed)\"))"}
 {"timestamp": "2025-08-19T11:41:58.145706", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Max retries exceeded with url: /update (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x000001D62D147110>: Failed to resolve 'api.thingspeak.com' ([Errno 11001] getaddrinfo failed)\"))"}
+{"timestamp": "2025-08-28T22:00:18.108717", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:00:35.256198", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:00:52.264991", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:01:09.419761", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:01:26.667715", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:01:42.869518", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:01:59.030921", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:02:15.243306", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:02:32.265207", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:02:49.904309", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:03:06.898030", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-28T22:03:23.130910", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload failed with status 400"}
+{"timestamp": "2025-08-29T10:18:35.789829", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Read timed out. (read timeout=10)"}
+{"timestamp": "2025-08-29T10:20:03.742284", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Read timed out. (read timeout=10)"}
+{"timestamp": "2025-08-29T10:21:59.677928", "type": "error", "component": "sensor", "error_message": "ThingSpeak upload error: HTTPSConnectionPool(host='api.thingspeak.com', port=443): Read timed out. (read timeout=10)"}
