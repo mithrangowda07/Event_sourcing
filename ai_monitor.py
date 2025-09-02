@@ -10,6 +10,7 @@ import time
 import threading
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+from pathlib import Path
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -177,18 +178,49 @@ class AIMonitor:
             print("="*60)
         
         # Extract critical issues
-        if self.verbose and ("Critical" in analysis or "High" in analysis):
+        critical_detected = "Critical" in analysis or "High" in analysis
+        if self.verbose and critical_detected:
             print("🚨 CRITICAL ISSUES DETECTED - IMMEDIATE ATTENTION REQUIRED!")
         
         # Store in alert history
         self.alert_history.append({
             'timestamp': datetime.now().isoformat(),
-            'analysis': analysis
+            'analysis': analysis,
+            'critical': critical_detected
         })
         
         # Keep only last 10 alerts
         if len(self.alert_history) > 10:
             self.alert_history.pop(0)
+        
+        # Trigger error management if critical issues detected
+        if critical_detected:
+            self._trigger_error_management(analysis)
+    
+    def _trigger_error_management(self, analysis: str):
+        """Trigger error management system when critical issues are detected."""
+        try:
+            # Try to import and use error manager
+            from error_manager import error_manager
+            
+            # Create error object from analysis
+            error = {
+                'type': 'ai_analysis_critical',
+                'message': f"Critical issues detected in AI analysis: {analysis[:200]}...",
+                'severity': 'critical',
+                'analysis': analysis,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # Handle the error
+            error_manager.handle_error(error)
+            
+        except ImportError:
+            if self.verbose:
+                print("⚠️  Error management system not available")
+        except Exception as e:
+            if self.verbose:
+                print(f"⚠️  Error triggering error management: {e}")
     
     def chat_with_ai(self, user_message: str) -> str:
         """Chat with AI about system logs and status."""
@@ -226,6 +258,50 @@ class AIMonitor:
             
         except Exception as e:
             return f"❌ AI Chat Error: {str(e)}"
+    
+    def generate_error_correction(self, error: Dict) -> str:
+        """Generate correction code for a specific error."""
+        try:
+            # Prepare error context
+            error_context = f"""
+            Error Type: {error.get('type', 'Unknown')}
+            Error Message: {error.get('message', 'No message')}
+            Severity: {error.get('severity', 'Unknown')}
+            """
+            
+            if 'file' in error:
+                error_context += f"File: {error['file']}\n"
+            if 'line' in error:
+                error_context += f"Line: {error['line']}\n"
+            if 'component' in error:
+                error_context += f"Component: {error['component']}\n"
+            
+            # Try to read the problematic file
+            file_content = ""
+            if 'file' in error and Path(error['file']).exists():
+                try:
+                    with open(error['file'], 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                except:
+                    pass
+            
+            # Create prompt for correction
+            prompt = f"""
+            You are an expert Python engineer. Fix the following error:
+
+            {error_context}
+            
+            {f"File Content:\n{file_content}" if file_content else ""}
+            
+            Provide ONLY the corrected code. Do not include explanations or markdown.
+            Return the complete corrected file content.
+            """
+            
+            response = model.generate_content(prompt)
+            return response.text.strip()
+            
+        except Exception as e:
+            return f"Failed to generate correction code: {e}"
     
     def get_system_status(self) -> Dict:
         """Get current AI monitoring status."""

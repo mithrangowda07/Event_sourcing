@@ -43,7 +43,7 @@ latest_timestamp = None
 sensor_thread = None
 stop_thread = False
 
-def generate_temperature():
+# def generate_temperature():
     """Generate a realistic temperature reading with some variation."""
     # Add some realistic variation (small changes from previous reading)
     if latest_temperature is None:
