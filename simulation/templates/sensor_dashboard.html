@@ -11,64 +11,288 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        .temperature-display {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #0d6efd;
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-bg: #f8fafc;
+            --dark-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
-        
+
+        [data-theme="dark"] {
+            --light-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-bg) 0%, #f1f5f9 50%, #e2e8f0 100%);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Add subtle animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .temperature-display {
+            font-size: 5.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            animation: temperatureGlow 3s ease-in-out infinite;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes temperatureGlow {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.02);
+                filter: brightness(1.1);
+            }
+        }
+
         .status-indicator {
-            font-size: 1.2rem;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
+            font-size: 1.1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .status-indicator:hover::before {
+            left: 100%;
         }
         
         .status-local {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            border: 2px solid #badbcc;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            color: var(--success-color);
+            border-color: var(--success-color);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
         
         .status-cloud {
-            background-color: #fff3cd;
-            color: #664d03;
-            border: 2px solid #ffecb5;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+            animation: cloudPulse 2s infinite;
+        }
+
+        @keyframes cloudPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+                transform: scale(1.02);
+            }
         }
         
         .status-offline {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
         }
         
         .control-btn {
-            font-size: 1.5rem;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            transition: all 0.3s ease;
+            font-size: 1.3rem;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
         }
         
         .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .control-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, var(--success-color));
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, var(--danger-color));
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
         }
         
         .card {
             border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border-radius: 24px;
+            background: var(--card-bg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: var(--shadow-xl);
         }
         
         .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
             color: white;
-            border-radius: 15px 15px 0 0 !important;
+            border-radius: 24px 24px 0 0 !important;
             border: none;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .card-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .timestamp {
-            font-size: 0.9rem;
-            color: #6c757d;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
         
         .loading-spinner {
@@ -77,15 +301,339 @@
         
         .error-message {
             display: none;
-            color: #dc3545;
-            font-weight: bold;
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+
+
+
+
+        .alert-custom {
+            border-radius: 15px;
+            border: none;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        [data-theme="dark"] .alert-info {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        [data-theme="dark"] .alert-info i {
+            color: var(--info-color) !important;
+        }
+
+        .progress-custom {
+            height: 8px;
+            border-radius: 10px;
+            background: var(--border-color);
+        }
+
+        [data-theme="dark"] .progress-custom {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .progress-bar-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .fab {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-xl);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent, rgba(255,255,255,0.2));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .fab:hover::before {
+            transform: translateX(100%);
+        }
+
+        .fab:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .fab:active {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .temperature-gauge {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+            animation: gaugeFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes gaugeFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+        }
+
+        .gauge-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                var(--danger-color) 0deg 90deg,
+                var(--warning-color) 90deg 180deg,
+                var(--success-color) 180deg 270deg,
+                var(--accent-color) 270deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+            position: relative;
+        }
+
+        .gauge-bg::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            z-index: -1;
+            animation: gaugeRotate 8s linear infinite;
+        }
+
+        @keyframes gaugeRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gauge-inner {
+            width: 75%;
+            height: 75%;
+            border-radius: 50%;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        [data-theme="dark"] .badge.bg-light {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-muted i {
+            color: var(--accent-color);
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .text-muted i {
+            color: var(--accent-color);
+        }
+
+        /* Fix system information text visibility in dark mode */
+        [data-theme="dark"] .card-body p {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .card-body strong {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .card-body span {
+            color: var(--text-secondary) !important;
+        }
+
+        /* Fix cloud connection text visibility */
+        [data-theme="dark"] .d-flex span:not(.badge) {
+            color: var(--text-primary) !important;
+        }
+
+        /* Fix badge visibility in dark mode */
+        [data-theme="dark"] .badge.bg-success {
+            background: var(--success-color) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-danger {
+            background: var(--danger-color) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-secondary {
+            background: var(--text-secondary) !important;
+            color: var(--card-bg) !important;
+        }
+
+        /* Fix card title visibility in dark mode */
+        [data-theme="dark"] .card-title {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .card-title i {
+            color: var(--accent-color) !important;
+        }
+
+        /* Enhanced loading spinner */
+        .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            border-width: 3px;
+            border-color: var(--primary-color);
+            border-right-color: transparent;
+        }
+
+        /* Progress bar enhancements */
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .progress {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @media (max-width: 768px) {
+            .temperature-display {
+                font-size: 3.5rem;
+            }
+            
+            .control-btn {
+                font-size: 1.1rem;
+                padding: 0.8rem 2rem;
+            }
+            
+            .card-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 0.5rem;
+            }
+
+            .temperature-gauge {
+                width: 180px;
+                height: 180px;
+            }
+
+            .gauge-inner {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
+    <!-- Dark Mode Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </div>
+
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
+            <div class="col-lg-10 col-md-12">
                 <!-- Header Card -->
                 <div class="card mb-4">
                     <div class="card-header text-center">
@@ -93,93 +641,146 @@
                             <i class="fas fa-thermometer-half me-2"></i>
                             Raspberry Pi Temperature Sensor
                         </h1>
-                        <p class="mb-0 mt-2 opacity-75">Real-time temperature monitoring with cloud integration</p>
+                        <p class="mb-0 mt-2 opacity-90">Real-time temperature monitoring with cloud integration</p>
+                        <div class="mt-3">
+                            <span class="badge bg-light text-dark me-2">
+                                <i class="fas fa-wifi me-1"></i>Live Data
+                            </span>
+                            <span class="badge bg-light text-dark me-2">
+                                <i class="fas fa-cloud me-1"></i>Cloud Sync
+                            </span>
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-shield-alt me-1"></i>Secure
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Temperature Display Card -->
+                <!-- Main Temperature Display -->
                 <div class="card mb-4">
                     <div class="card-body text-center py-5">
-                        <div class="mb-3">
-                            <i class="fas fa-thermometer-half text-primary" style="font-size: 3rem;"></i>
+                        <div class="temperature-gauge mb-4">
+                            <div class="gauge-bg">
+                                <div class="gauge-inner" id="gauge-temperature">
+                                    --°C
+                                </div>
+                            </div>
                         </div>
                         <div class="temperature-display mb-3" id="temperature-display">
                             --°C
                         </div>
                         <div class="timestamp mb-3" id="timestamp">
-                            No data available
+                            <i class="fas fa-clock me-2"></i>No data available
                         </div>
                         <div class="status-indicator" id="status-indicator">
                             <i class="fas fa-circle me-2"></i>
                             Sensor Offline
                         </div>
-                    </div>
-                </div>
-
-                <!-- Control Panel Card -->
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title mb-4">
-                            <i class="fas fa-sliders-h me-2"></i>
-                            Sensor Control
-                        </h5>
-                        
-                        <div class="row justify-content-center">
-                            <div class="col-md-6">
-                                <button class="btn btn-success control-btn me-2" id="start-btn" onclick="startSensor()">
-                                    <i class="fas fa-play me-2"></i>
-                                    Start Sensor
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <button class="btn btn-danger control-btn ms-2" id="stop-btn" onclick="stopSensor()" disabled>
-                                    <i class="fas fa-stop me-2"></i>
-                                    Stop Sensor
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <div class="loading-spinner" id="loading-spinner">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                        <div class="mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-microchip me-2"></i>
+                                        <small>Raspberry Pi 4</small>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-battery-three-quarters me-2"></i>
+                                        <small>Powered</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Information Card -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="fas fa-info-circle me-2"></i>
-                            System Information
-                        </h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Sensor Name:</strong> <span id="sensor-name">--</span></p>
-                                <p><strong>User ID:</strong> <span id="user-id">--</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Temperature Range:</strong> 20°C - 40°C</p>
-                                <p><strong>Update Interval:</strong> 15 seconds</p>
+                <!-- Control Panel and System Info -->
+                <div class="row mb-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-4">
+                                    <i class="fas fa-sliders-h me-2"></i>
+                                    Sensor Control
+                                </h5>
+                                
+                                <div class="row justify-content-center">
+                                    <div class="col-md-6 mb-3">
+                                        <button class="btn btn-success control-btn w-100" id="start-btn" onclick="startSensor()">
+                                            <i class="fas fa-play me-2"></i>
+                                            Start Sensor
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <button class="btn btn-danger control-btn w-100" id="stop-btn" onclick="stopSensor()" disabled>
+                                            <i class="fas fa-stop me-2"></i>
+                                            Stop Sensor
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <div class="loading-spinner" id="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Connection Status -->
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Cloud Connection</span>
+                                        <span id="cloud-status" class="badge bg-secondary">Unknown</span>
+                                    </div>
+                                    <div class="progress progress-custom">
+                                        <div class="progress-bar progress-bar-custom" id="connection-progress" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-cloud me-2"></i>
-                            <strong>Cloud Integration:</strong> Temperature data is automatically sent to ThingSpeak every 15 seconds when the sensor is active.
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    System Information
+                                </h5>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <p><strong>Sensor Name:</strong> <span id="sensor-name">--</span></p>
+                                        <p><strong>User ID:</strong> <span id="user-id">--</span></p>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <p><strong>Temperature Range:</strong> 20°C - 40°C</p>
+                                        <p><strong>Update Interval:</strong> 15 seconds</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info alert-custom mt-3">
+                                    <i class="fas fa-cloud me-2"></i>
+                                    <strong>Cloud Integration:</strong> Temperature data is automatically sent to ThingSpeak every 15 seconds when the sensor is active.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Error Message -->
-                <div class="alert alert-danger mt-3 error-message" id="error-message" role="alert">
+                <div class="alert alert-danger alert-custom error-message" id="error-message" role="alert">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <span id="error-text"></span>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-action">
+        <button class="fab" onclick="refreshData()" title="Refresh Data">
+            <i class="fas fa-sync-alt"></i>
+        </button>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -189,12 +790,38 @@
         let updateInterval;
         let sensorActive = false;
 
+
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
             updateStatus();
             // Update status every 2 seconds
             updateInterval = setInterval(updateStatus, 2000);
         });
+
+        // Theme Management
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+
 
         async function updateStatus() {
             try {
@@ -203,26 +830,31 @@
                 
                 updateDisplay(data);
                 updateControls(data.active);
+                updateConnectionStatus(data);
                 hideError();
                 
             } catch (error) {
                 console.error('Error fetching status:', error);
                 showError('Failed to connect to sensor server');
+                updateConnectionStatus({ active: false });
             }
         }
 
         function updateDisplay(data) {
             const tempDisplay = document.getElementById('temperature-display');
+            const gaugeTemp = document.getElementById('gauge-temperature');
             const timestamp = document.getElementById('timestamp');
             const statusIndicator = document.getElementById('status-indicator');
             const sensorName = document.getElementById('sensor-name');
             const userId = document.getElementById('user-id');
 
-            // Update temperature
+            // Update temperature displays
             if (data.temperature !== null) {
                 tempDisplay.textContent = `${data.temperature}°C`;
+                gaugeTemp.textContent = `${data.temperature}°C`;
             } else {
                 tempDisplay.textContent = '--°C';
+                gaugeTemp.textContent = '--°C';
             }
 
             // Update timestamp
@@ -245,6 +877,25 @@
             // Update system info
             sensorName.textContent = data.sensor_name || '--';
             userId.textContent = data.user_id || '--';
+        }
+
+
+
+
+
+        function updateConnectionStatus(data) {
+            const cloudStatus = document.getElementById('cloud-status');
+            const connectionProgress = document.getElementById('connection-progress');
+            
+            if (data.active) {
+                cloudStatus.textContent = 'Connected';
+                cloudStatus.className = 'badge bg-success';
+                connectionProgress.style.width = '100%';
+            } else {
+                cloudStatus.textContent = 'Disconnected';
+                cloudStatus.className = 'badge bg-danger';
+                connectionProgress.style.width = '0%';
+            }
         }
 
         function updateControls(active) {
@@ -316,6 +967,17 @@
             }
         }
 
+        function refreshData() {
+            const fab = document.querySelector('.fab i');
+            fab.style.animation = 'spin 1s linear infinite';
+            
+            updateStatus();
+            
+            setTimeout(() => {
+                fab.style.animation = '';
+            }, 1000);
+        }
+
         function showLoading(show) {
             const spinner = document.getElementById('loading-spinner');
             spinner.style.display = show ? 'block' : 'none';
@@ -358,6 +1020,16 @@
                 }
             }, 3000);
         }
+
+        // Add CSS for spin animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
