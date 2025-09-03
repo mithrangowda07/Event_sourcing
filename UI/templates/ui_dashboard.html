@@ -9,6 +9,38 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Shared Styles -->
+    <style>
+        :root {
+            --bg-page: #f5f7fb;
+            --bg-card: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ring: rgba(102,126,234,.35);
+        }
+        [data-theme="dark"] {
+            --bg-page: #0f1220;
+            --bg-card: #14182a;
+            --text-primary: #e9ecef;
+            --text-secondary: #b0b6c3;
+            --ring: rgba(102,126,234,.5);
+        }
+        body { background: var(--bg-page) !important; color: var(--text-primary); }
+        .status-card { border: none; box-shadow: 0 10px 30px rgba(16,24,40,.06); border-radius: 16px; background: var(--bg-card); }
+        .card-header { background: var(--brand-gradient); color: #fff; border-radius: 16px 16px 0 0 !important; border: none; }
+        .navbar-glass { backdrop-filter: saturate(140%) blur(10px); background: rgba(20,24,42,.7); border-bottom: 1px solid rgba(255,255,255,.08); }
+        .navbar-glass .navbar-brand, .navbar-glass .nav-link, .navbar-glass .btn { color: #e9ecef; }
+        .navbar-glass .nav-link.active { color: #fff; font-weight: 600; }
+        .ring { box-shadow: 0 0 0 4px var(--ring); }
+        .source-indicator { transition: transform .2s ease; }
+        .source-indicator:hover { transform: translateY(-1px); }
+        .temperature-display { font-size: 5rem; font-weight: 800; letter-spacing: -1px; color: #0d6efd; text-shadow: 0 6px 20px rgba(13,110,253,.2); }
+        .timestamp { color: var(--text-secondary); }
+        .network-status { background: rgba(102,126,234,.08); color: var(--text-primary); border-radius: 12px; }
+        .btn-toggle { display: inline-flex; align-items: center; gap: .5rem; }
+        .theme-icon { width: 18px; height: 18px; }
+    </style>
     
     <style>
         .temperature-display {
@@ -118,7 +150,25 @@
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-glass sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-thermometer-half me-2"></i>
+                <strong>Temp Monitor</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse" aria-controls="navCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/events">Events</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10">
