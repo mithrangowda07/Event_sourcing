@@ -1,12 +1,13 @@
-# 🌡️ Temperature Monitoring System with AI-Powered Error Management
+# 🌡️ Temperature Monitoring System with AI-Powered Error Management & Email Notifications
 
-A comprehensive IoT temperature monitoring system with advanced AI-powered error detection, correction, and self-healing capabilities. The system automatically detects errors, pauses servers, displays correction code in the terminal, and provides intelligent fixes using Gemini AI.
+A comprehensive IoT temperature monitoring system with advanced AI-powered error detection, correction, self-healing capabilities, and automated email reporting. The system automatically detects errors, pauses servers, displays correction code in the terminal, provides intelligent fixes using Gemini AI, and sends analysis reports via email.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
 - [System Architecture](#system-architecture)
 - [Core Features](#core-features)
+- [Email Notification System](#email-notification-system)
 - [Event Generation & Logging](#event-generation--logging)
 - [AI Error Detection & Scanning](#ai-error-detection--scanning)
 - [Error Management System](#error-management-system)
@@ -15,6 +16,7 @@ A comprehensive IoT temperature monitoring system with advanced AI-powered error
 - [Usage Guide](#usage-guide)
 - [API Documentation](#api-documentation)
 - [Configuration](#configuration)
+- [System Properties](#system-properties)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Features](#advanced-features)
 - [Contributing](#contributing)
@@ -27,6 +29,7 @@ This system provides a complete IoT temperature monitoring solution with the fol
 - **Real-time Temperature Monitoring**: Simulates Raspberry Pi temperature sensors with cloud integration
 - **AI-Powered Error Detection**: Automatically scans code and logs for errors using Gemini AI
 - **Intelligent Error Correction**: Generates and displays correction code in terminal
+- **Email Notification System**: Automated email reports of AI analysis results with professional formatting
 - **Server Pause/Resume**: Automatically pauses all servers during error correction
 - **Self-Healing Capabilities**: Can automatically fix detected errors
 - **Web Dashboards**: Multiple web interfaces for monitoring and control
@@ -69,6 +72,14 @@ This system provides a complete IoT temperature monitoring solution with the fol
 │  │  │ Code        │  │ Error       │  │ System      │        │
 │  │  │ Analysis    │  │ Correction  │  │ Monitoring  │        │
 │  │  └─────────────┘  └─────────────┘  └─────────────┘        │
+│  └─────────────────────────────────────────────────────────────┤
+│                           │                                    │
+│  ┌─────────────────────────────────────────────────────────────┤
+│  │              Email Notification System                     │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
+│  │  │ SMTP        │  │ HTML        │  │ Analysis    │        │
+│  │  │ Service     │  │ Templates   │  │ Reports     │        │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘        │
 │  └─────────────────────────────────────────────────────────────┘
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -100,6 +111,76 @@ This system provides a complete IoT temperature monitoring solution with the fol
 - **Real-time Monitoring**: Continuous system health monitoring
 - **Log Analysis**: AI analyzes logs for patterns and issues
 - **Alert System**: Notifies of critical issues
+
+### 📧 Email Notification System
+- **Automated Reports**: Send AI analysis results via email with one-click
+- **Professional Formatting**: HTML emails with modern responsive design
+- **Critical Issue Highlighting**: Color-coded status indicators for urgent issues
+- **SMTP Integration**: Secure email delivery using TLS encryption
+- **Multiple Provider Support**: Works with Gmail, Outlook, Yahoo, and custom SMTP servers
+- **Plain Text Fallback**: Ensures compatibility across all email clients
+
+## 📧 Email Notification System
+
+### Overview
+The email notification system allows administrators to receive AI analysis reports directly via email. This feature provides instant access to system health information and critical issue alerts, even when not actively monitoring the dashboard.
+
+### Key Features
+
+#### 1. One-Click Email Sending
+- **Email Analysis Button**: Located in the AI controls section of the events page
+- **Real-time Feedback**: Button shows loading state and provides success/error messages
+- **Latest Analysis**: Always sends the most recent AI analysis results
+
+#### 2. Professional Email Templates
+- **HTML Formatting**: Modern, responsive email design with system branding
+- **Status Indicators**: Color-coded headers (red for critical, green for healthy)
+- **Structured Layout**: Clear sections for analysis results, timestamps, and system info
+- **Mobile Responsive**: Optimized for viewing on all devices
+
+#### 3. SMTP Configuration
+- **Secure Connections**: Uses TLS encryption for email transmission
+- **Multiple Providers**: Pre-configured for Gmail, Outlook, Yahoo Mail
+- **Custom SMTP**: Supports any SMTP server configuration
+- **App Password Support**: Secure authentication using app-specific passwords
+
+#### 4. Email Content Structure
+```
+Subject: System Analysis Report - [Timestamp]
+
+Header: System branding with timestamp
+Status Badge: CRITICAL ISSUES DETECTED / SYSTEM HEALTHY
+Analysis Content: Complete AI analysis with formatting
+Footer: System information and contact details
+```
+
+### Configuration
+
+Add these variables to your `.env` file:
+```env
+# Email Configuration
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SENDER_EMAIL=your-email@gmail.com
+SENDER_PASSWORD=your-app-password
+RECIPIENT_EMAIL=recipient@example.com
+```
+
+### Usage Workflow
+
+1. **Trigger Analysis**: Click "Analyze" or start AI monitoring
+2. **Send Email**: Click "Email Analysis" button in the UI
+3. **Receive Report**: Professional email with analysis results
+4. **Take Action**: Review critical issues and recommendations
+
+### Security Features
+
+- **Environment Variables**: Credentials stored securely in `.env` file
+- **TLS Encryption**: All email transmissions are encrypted
+- **App Passwords**: Supports secure app-specific authentication
+- **No Hardcoded Secrets**: All sensitive data externalized
+
+For detailed setup instructions, see [EMAIL_SETUP_GUIDE.md](EMAIL_SETUP_GUIDE.md).
 
 ## 📝 Event Generation & Logging
 
@@ -546,6 +627,17 @@ Start AI monitoring.
 #### POST `/api/stop-monitoring`
 Stop AI monitoring.
 
+#### POST `/api/send-analysis-email`
+Send latest AI analysis results via email.
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Analysis report sent successfully to recipient@example.com"
+}
+```
+
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -566,6 +658,11 @@ Stop AI monitoring.
 | `TEMP_MIN` | Minimum temperature (°C) | No | 20.0 |
 | `TEMP_MAX` | Maximum temperature (°C) | No | 40.0 |
 | `UPDATE_INTERVAL` | Update interval (seconds) | No | 15 |
+| `SMTP_SERVER` | SMTP server for email | No | smtp.gmail.com |
+| `SMTP_PORT` | SMTP port for email | No | 587 |
+| `SENDER_EMAIL` | Email sender address | No | - |
+| `SENDER_PASSWORD` | Email sender password/app password | No | - |
+| `RECIPIENT_EMAIL` | Email recipient address | No | - |
 
 ### Monitoring Intervals
 
@@ -580,6 +677,202 @@ Log files are stored in the `logs/` directory:
 - `sensor_events.log`: Sensor-related events
 - `error_events.log`: Error and exception events
 - `data_events.log`: Data transfer and processing events
+
+## 🏗️ System Properties
+
+### Core Components
+
+#### 1. Simulation Server (`simulation/sensor_server.py`)
+**Purpose**: Simulates Raspberry Pi temperature sensor with cloud integration
+**Port**: 5000 (configurable via `SIMULATION_PORT`)
+**Key Features**:
+- Temperature reading generation (20-40°C range)
+- ThingSpeak cloud upload integration
+- Local API endpoints for data access
+- Identity verification system
+- Comprehensive event logging
+
+**Dependencies**:
+- Flask web framework
+- Requests for HTTP calls
+- Python-dotenv for configuration
+- JSON for data serialization
+
+#### 2. UI Server (`UI/ui_server.py`)
+**Purpose**: Main web interface for system monitoring and control
+**Port**: 5001 (configurable via `UI_PORT`)
+**Key Features**:
+- Temperature dashboard with real-time updates
+- Events page with filtering and search
+- AI chat interface integration
+- Proxy endpoints for AI services
+- Email functionality integration
+
+**Templates**:
+- `ui_dashboard.html`: Main temperature monitoring dashboard
+- `events.html`: Comprehensive events viewer with AI chat
+
+#### 3. AI Chat Server (`ai_chat_server.py`)
+**Purpose**: AI-powered system monitoring and chat interface
+**Port**: 5002 (configurable via `AI_CHAT_PORT`)
+**Key Features**:
+- Gemini AI integration for system analysis
+- Real-time chat interface
+- Analysis triggering and monitoring
+- Email report generation
+- System status reporting
+
+#### 4. AI Monitor (`ai_monitor.py`)
+**Purpose**: Core AI monitoring and analysis engine
+**Key Features**:
+- Continuous log analysis (30-second intervals)
+- Error detection and classification
+- AI-powered system health assessment
+- Analysis result storage and retrieval
+- Email integration for report sending
+
+#### 5. Email Service (`email_service.py`)
+**Purpose**: Professional email reporting system
+**Key Features**:
+- SMTP integration with TLS security
+- HTML email templates with responsive design
+- Critical issue highlighting
+- Multiple email provider support
+- Configuration validation and testing
+
+#### 6. Error Management System (`error_manager.py`)
+**Purpose**: Comprehensive error detection and handling
+**Key Features**:
+- Multi-level error classification
+- Server pause/resume functionality
+- Terminal interface for error display
+- AI-powered error correction
+- Backup and recovery management
+
+#### 7. Self-Healing System (`self_healing_system.py`)
+**Purpose**: Automated error correction and system recovery
+**Key Features**:
+- Automatic error detection
+- AI-generated correction code
+- User approval workflow
+- Backup creation before fixes
+- System state management
+
+### System Architecture Layers
+
+#### 1. Presentation Layer
+- **Web Dashboards**: Real-time monitoring interfaces
+- **Terminal Interface**: Error management and correction display
+- **Email Reports**: Professional analysis notifications
+
+#### 2. Application Layer
+- **Flask Servers**: Web application framework
+- **API Endpoints**: RESTful service interfaces
+- **Event Handlers**: User interaction processing
+
+#### 3. Business Logic Layer
+- **AI Monitor**: System analysis and health assessment
+- **Error Manager**: Error detection and classification
+- **Email Service**: Report generation and delivery
+
+#### 4. Data Layer
+- **Event Logging**: JSON-formatted log files
+- **Configuration**: Environment variable management
+- **Backup Storage**: System state preservation
+
+### Data Flow Architecture
+
+```
+Temperature Sensor → Event Logger → AI Monitor → Analysis Results
+                                        ↓
+Email Service ← Analysis Storage ← Error Manager ← Terminal Interface
+     ↓
+SMTP Server → Email Client (Administrator)
+```
+
+### Inter-Component Communication
+
+#### 1. HTTP APIs
+- **Internal**: Server-to-server communication via REST APIs
+- **External**: ThingSpeak cloud integration
+- **Client**: Web browser to server communication
+
+#### 2. File System
+- **Log Files**: JSON-formatted event storage
+- **Configuration**: Environment variables via `.env`
+- **Backups**: Automated file preservation
+
+#### 3. Process Management
+- **Threading**: Concurrent monitoring and analysis
+- **Server Control**: Start/stop/pause functionality
+- **Error Handling**: Graceful degradation and recovery
+
+### Security Properties
+
+#### 1. Authentication
+- **API Keys**: Secure service authentication
+- **Identity Verification**: Local network access control
+- **App Passwords**: Email service security
+
+#### 2. Data Protection
+- **Environment Variables**: Secure credential storage
+- **TLS Encryption**: Secure email transmission
+- **Input Validation**: SQL injection and XSS prevention
+
+#### 3. Access Control
+- **Network Isolation**: Local vs cloud service separation
+- **File Permissions**: Secure log and backup access
+- **API Rate Limiting**: Service abuse prevention
+
+### Performance Characteristics
+
+#### 1. Monitoring Intervals
+- **Error Detection**: 5 seconds
+- **AI Analysis**: 30 seconds
+- **Temperature Updates**: 15 seconds
+- **Log Collection**: Real-time
+
+#### 2. Resource Usage
+- **Memory**: ~50MB per server process
+- **CPU**: Low usage except during AI analysis
+- **Disk**: Minimal (log files grow over time)
+- **Network**: Periodic cloud uploads and email sending
+
+#### 3. Scalability
+- **Horizontal**: Multiple sensor support possible
+- **Vertical**: Configurable analysis intervals
+- **Cloud**: ThingSpeak handles data scaling
+
+### Configuration Management
+
+#### 1. Environment Variables
+- **Centralized**: Single `.env` file configuration
+- **Typed**: Automatic type conversion and validation
+- **Defaulted**: Sensible defaults for optional settings
+
+#### 2. Runtime Configuration
+- **Dynamic**: Some settings changeable without restart
+- **Persistent**: Configuration changes saved automatically
+- **Validated**: Input validation and error reporting
+
+### Error Handling Strategy
+
+#### 1. Error Classification
+- **Critical**: System failures requiring immediate attention
+- **High**: Major functionality issues
+- **Medium**: Minor issues with workarounds
+- **Low**: Informational messages and warnings
+
+#### 2. Recovery Mechanisms
+- **Automatic**: Self-healing for common issues
+- **Semi-automatic**: User approval for critical changes
+- **Manual**: Terminal interface for complex problems
+
+#### 3. Notification Channels
+- **Terminal**: Real-time error display
+- **Email**: Automated analysis reports
+- **Logs**: Persistent error recording
+- **Web UI**: Dashboard status indicators
 
 ## 🔧 Troubleshooting
 

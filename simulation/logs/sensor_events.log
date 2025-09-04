@@ -34,3 +34,5 @@
 {"timestamp": "2025-09-03T22:07:36.690186", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
 {"timestamp": "2025-09-03T22:10:18.244353", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
 {"timestamp": "2025-09-03T22:12:11.406341", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-09-04T11:09:23.276000", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}
+{"timestamp": "2025-09-04T11:44:58.356420", "type": "sensor", "event_type": "sensor_on", "description": "Temperature sensor simulation started"}

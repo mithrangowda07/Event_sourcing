@@ -34,6 +34,7 @@ class AIMonitor:
         self.monitoring_active = False
         self.alert_history = []
         self.chat_history = []
+        self.latest_analysis = None
         self.verbose = os.getenv("AI_VERBOSE", "0") not in ("0", "false", "False", "")
         
     def start_monitoring(self):
@@ -183,15 +184,19 @@ class AIMonitor:
             print("🚨 CRITICAL ISSUES DETECTED - IMMEDIATE ATTENTION REQUIRED!")
         
         # Store in alert history
-        self.alert_history.append({
+        alert_data = {
             'timestamp': datetime.now().isoformat(),
             'analysis': analysis,
             'critical': critical_detected
-        })
+        }
+        self.alert_history.append(alert_data)
         
         # Keep only last 10 alerts
         if len(self.alert_history) > 10:
             self.alert_history.pop(0)
+        
+        # Store latest analysis for email functionality
+        self.latest_analysis = alert_data
         
         # Trigger error management if critical issues detected
         if critical_detected:
@@ -303,6 +308,40 @@ class AIMonitor:
         except Exception as e:
             return f"Failed to generate correction code: {e}"
     
+    def send_latest_analysis_email(self) -> Dict:
+        """Send the latest analysis results via email."""
+        try:
+            # Import email service
+            from email_service import email_service
+            
+            if not self.latest_analysis:
+                return {
+                    'success': False,
+                    'error': 'No analysis results available to send'
+                }
+            
+            # Send email with latest analysis
+            result = email_service.send_analysis_email(self.latest_analysis)
+            
+            if self.verbose:
+                if result['success']:
+                    print(f"📧 Analysis email sent successfully: {result['message']}")
+                else:
+                    print(f"❌ Failed to send analysis email: {result['error']}")
+            
+            return result
+            
+        except ImportError:
+            return {
+                'success': False,
+                'error': 'Email service not available'
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Failed to send email: {str(e)}'
+            }
+    
     def get_system_status(self) -> Dict:
         """Get current AI monitoring status."""
         return {
@@ -311,7 +350,8 @@ class AIMonitor:
             'analysis_interval': self.analysis_interval,
             'alert_count': len(self.alert_history),
             'recent_alerts': self.alert_history[-3:] if self.alert_history else [],
-            'chat_history': self.chat_history[-5:] if self.chat_history else []
+            'chat_history': self.chat_history[-5:] if self.chat_history else [],
+            'latest_analysis': self.latest_analysis
         }
 
 # Global AI monitor instance

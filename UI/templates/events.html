@@ -563,12 +563,7 @@
                                     </div>
                                 </div>
                                 
-                                <div id="recentAnalysis" class="mb-3">
-                                    <h6 class="text-muted mb-2">Recent Analysis</h6>
-                                    <div id="analysisContainer" style="max-height: 200px; overflow-y: auto; background-color: #1e293b !important; color: #f1f5f9 !important; border: 2px solid #ff0000 !important; border-radius: 8px; padding: 1rem;">
-                                        <p class="small" style="color: #00ff00 !important; font-size: 16px !important; font-weight: bold !important;">TEST: Loading analysis...</p>
-                                    </div>
-                                </div>
+                                <!-- Recent Analysis section removed - analysis now appears in chat -->
                                 
                                 <div class="ai-chat-messages" id="chatMessages">
                                     <div class="ai-message ai">
@@ -594,6 +589,9 @@
                                         </button>
                                         <button id="btnAnalyzeNow" class="btn btn-outline-primary btn-sm">
                                             <i class="fas fa-search me-1"></i>Analyze
+                                        </button>
+                                        <button id="btnSendEmail" class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-envelope me-1"></i>Email Analysis
                                         </button>
                                     </div>
                                 </div>
@@ -639,6 +637,7 @@
             document.getElementById('btnStartAI').addEventListener('click', startAIMonitoring);
             document.getElementById('btnStopAI').addEventListener('click', stopAIMonitoring);
             document.getElementById('btnAnalyzeNow').addEventListener('click', triggerAnalysis);
+            document.getElementById('btnSendEmail').addEventListener('click', sendAnalysisEmail);
             document.getElementById('generateTestBtn').addEventListener('click', generateTestEvents);
             
             loadLogs();
@@ -915,28 +914,26 @@
             try {
                 const r = await fetch('/api/ai/analysis');
                 const d = await r.json();
-                const container = document.getElementById('analysisContainer');
-                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                 
                 if (d.success && d.recent_alerts && d.recent_alerts.length) {
-                    const html = d.recent_alerts.map(a => {
-                        const ts = new Date(a.timestamp).toLocaleString();
-                        const text = (a.analysis || '').replace(/\n/g, '<br>');
-                        const bgColor = isDark ? '#1e293b' : '#ffffff';
-                        const textColor = isDark ? '#f1f5f9' : '#1e293b';
-                        const secondaryColor = isDark ? '#94a3b8' : '#64748b';
-                        const borderColor = isDark ? '#334155' : '#e2e8f0';
+                    // Add each analysis as an AI message in the chat
+                    d.recent_alerts.forEach(alert => {
+                        const timestamp = new Date(alert.timestamp).toLocaleString();
+                        const analysis = alert.analysis || '';
                         
-                        return `<div class="mb-2 p-2 border rounded" style="background: ${bgColor}; border-color: ${borderColor}; color: ${textColor};"><div class="small" style="color: ${secondaryColor};">${ts}</div><div style="white-space:pre-wrap; font-size: 0.85rem; color: ${textColor};">${text}</div></div>`;
-                    }).join('');
-                    container.innerHTML = html;
+                        // Create a formatted analysis message
+                        const analysisMessage = `**Analysis - ${timestamp}**\n\n${analysis}`;
+                        
+                        // Add as AI message to chat
+                        addChatMessage('ai', analysisMessage);
+                    });
                 } else {
-                    const textColor = isDark ? '#94a3b8' : '#64748b';
-                    container.innerHTML = `<p class="small" style="color: ${textColor};">No recent analysis</p>`;
+                    // Add a message indicating no recent analysis
+                    addChatMessage('ai', 'No recent analysis results available.');
                 }
             } catch (e) {
-                const errorColor = isDark ? '#ef4444' : '#dc3545';
-                document.getElementById('analysisContainer').innerHTML = `<p class="small" style="color: ${errorColor};">Error loading analysis</p>`;
+                // Add error message to chat
+                addChatMessage('ai', `Error loading analysis: ${e.message}`);
             }
         }
 
@@ -978,7 +975,17 @@
             msgDiv.className = `ai-message ${type}`;
             
             const sender = type === 'user' ? 'You' : (type === 'ai' ? 'AI Assistant' : 'System');
-            msgDiv.innerHTML = `<div class="small text-muted">${sender}</div><div>${sanitize(content)}</div>`;
+            
+            // Format AI responses with proper HTML formatting
+            let formattedContent = content;
+            if (type === 'ai') {
+                // Convert markdown-style formatting to HTML
+                formattedContent = formatAIResponse(content);
+            } else {
+                formattedContent = sanitize(content);
+            }
+            
+            msgDiv.innerHTML = `<div class="small text-muted">${sender}</div><div>${formattedContent}</div>`;
             
             container.appendChild(msgDiv);
             container.scrollTop = container.scrollHeight;
@@ -1058,6 +1065,32 @@
                 setTimeout(loadRecentAnalysis, 2000);
             } catch (e) {
                 addChatMessage('error', `Failed to trigger analysis: ${e.message}`);
+            }
+        }
+
+        async function sendAnalysisEmail() {
+            const emailBtn = document.getElementById('btnSendEmail');
+            const originalText = emailBtn.innerHTML;
+            
+            try {
+                // Show loading state
+                emailBtn.disabled = true;
+                emailBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
+                
+                const response = await fetch('/api/ai/send-analysis-email', {method: 'POST'});
+                const result = await response.json();
+                
+                if (result.success) {
+                    addChatMessage('ai', `📧 ${result.message}`);
+                } else {
+                    addChatMessage('error', `❌ Failed to send email: ${result.error}`);
+                }
+            } catch (e) {
+                addChatMessage('error', `❌ Error sending email: ${e.message}`);
+            } finally {
+                // Restore button state
+                emailBtn.disabled = false;
+                emailBtn.innerHTML = originalText;
             }
         }
 

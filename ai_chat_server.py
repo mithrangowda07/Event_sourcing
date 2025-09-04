@@ -123,6 +123,15 @@ def get_recent_analysis():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/send-analysis-email', methods=['POST'])
+def send_analysis_email():
+    """Send latest analysis results via email."""
+    try:
+        result = ai_monitor.send_latest_analysis_email()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     print("🤖 AI Chat Server")
     print("=" * 50)

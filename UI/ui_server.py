@@ -284,6 +284,14 @@ def api_ai_chat():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/ai/send-analysis-email', methods=['POST'])
+def api_ai_send_email():
+    try:
+        resp = requests.post(f'http://127.0.0.1:{AI_CHAT_PORT}/api/send-analysis-email', timeout=10)
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/logs')
 def api_logs():
     """Get logs over a configurable time window (minutes query param)."""
